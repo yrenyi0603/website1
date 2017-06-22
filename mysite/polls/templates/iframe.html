@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>安全运维部管理终端</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/easyui.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static '/css/icon.css' %}">
+	<script type="text/javascript" src="{% static '/js/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/jquery.easyui.min.js' %}"></script>
+
+</head>
+<body>
+		<table id="dg"></table>
+		<div id="toolbar">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newobj()">New</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editobj()">Edit</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyobj()">Remove</a>
+		</div>
+		<div style="margin:20px 0;"></div>
+		<div id="dlg" class="easyui-dialog" style="height:400px;width:100%;max-width:400px;padding:10px 40px 20px 40px;"
+				closed="true" buttons="#dlg-buttons">
+		</div>
+		<div id="his" class="easyui-dialog" style="width:60%;height:400px;"
+			 data-options="title:'历史记录',resizable:true,closed:true"
+				 >
+			<table id="hisdg">
+				
+			</table>
+		</div>
+		<div id="dlg-buttons">
+			<!--
+			<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+			-->
+			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveobj()">Save</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+		</div>
+		<div>
+			{{ form.mtype.value }}
+		</div>
+		{% if form.mtype.value == 'server' %}
+		<table id="tb">
+			<tr>
+				<td>
+					<span>{{ form.ipaddress.label }}:</span>
+					<input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
+				</td>
+				<td>
+					<span>{{ form.status.label }}:</span>
+					{{ form.status   }}
+				</td>
+				<td>
+					<span>{{ form.zone.label }}:</span>
+					{{ form.zone   }}
+				</td>
+				<td>
+					<span>{{ form.assert_number.label }}:</span>
+					<input class="easyui-textbox" id="{{ form.assert_number.id_for_label }}">
+				</td>
+				<td>
+					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
+					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
+				</td>
+			</tr>
+		</table>
+		{% endif %}
+		{% if form.mtype.value == 'staff' %}
+		<table id="tb">
+			<tr>
+				<td>
+					<span>{{ form.name.label }}:</span>
+					<input class="easyui-textbox" id="{{ form.name.id_for_label }}">
+				</td>
+				<td>
+					<span>{{ form.department.label }}:</span>
+					{{ form.department   }}
+				</td>
+				<td>
+					<span>{{ form.ipaddress.label }}:</span>
+					<input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
+				</td>
+				<td>
+					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
+					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
+				</td>
+			</tr>
+		</table>
+		{% endif %}
+{% block getlist %}
+{% endblock %}
+{% include 'script/operition.html' %}
+</body>
+</html>

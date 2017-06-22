@@ -1,0 +1,116 @@
+{% extends 'iframe.html' %}
+{% block getlist %}
+<script Language=JavaScript>
+	$('#dg').datagrid({
+    url:'{{ url.objlist }}',
+    columns:[[
+        {%  for field in form.visible_fields %}
+            {field:'{{ field.html_name  }}',title:'{{ field.label  }}',width:100
+                {% if form.mtype.value == 'server' %}
+                    {% if field.html_name  == "status"  %}
+                        ,styler: function(value,row,index)
+                        {
+                            if (value ==  '异常' )
+                            {
+                                return 'background-color:#ffee00;color:red;';
+                            }
+                        }
+                    {% endif %}
+                {% endif %}
+            },
+        {% endfor %}
+    ]],
+    queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+    rownumbers:true,
+    nowrap: false,
+    idField:'pk',
+    pagination:true,
+    pageSize:10,
+    pageList:[10,20,50],
+    striped : true,
+    singleSelect:true,
+    fitColumns:true,
+    loadMsg:'正在请求数据',
+    toolbar:'#tb',
+    {% comment "Optional note" %}
+        rowStyler: function(index,row){
+                        {% if form.status %}
+                            if (row.status == '已关机' ){
+                                return 'background-color:#FFD39B;color:#fff;font-weight:bold;';
+                            }
+                            else if ( row.status == '异常' ){
+                                return 'background-color:#EE6A50;color:#fff;font-weight:bold;';
+                            }
+                            else if ( row.status == '正常' ){
+                                return 'background-color:#F0FFF0;font-weight:bold;';
+                            }
+                        {% endif %}
+                    },
+	{% endcomment %}
+	onDblClickRow:function (rowIndex, rowData) {
+	    var selectedRow = $(this).datagrid('getSelected');
+	    $('#hisdg').datagrid({
+            url:'{{ url.historyurl }}',
+            columns:[[
+                {field:'time',title:'修改时间',width:60,
+                        {% comment "Optional fields" %}
+                        formatter:function(value,row,index){
+                            if (row.fields){
+                                return JSON.stringify(row.fields);
+                            }
+                        }
+                        {% endcomment %}
+                },
+                {field:'context',title:'修改内容',width:200},
+            ]],
+            queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}',pk:rowData.pk},
+            rownumbers:true,
+            nowrap: false,
+            idField:'pk',
+            pagination:true,
+            pageSize:5,
+            fit:true,
+            pageList:[5,10,20,50],
+            striped : true,
+            singleSelect:true,
+            fitColumns:true,
+            loadMsg:'正在请求数据',
+            loadFilter:function(data){
+                return data;
+                {% comment "Optional js" %}
+                var a=JSON.stringify(data);
+                alert(a);
+                var s=new Object();
+                s.total=data.total;
+                s.rows=new Array();
+                //l=new Array();
+                for (var i=0;i<data.rows.length;i++){
+
+                    //l.push(data.rows[i].serialized_data);
+                    var b=new Array()
+                    b=data.rows[i].serialized_data;
+                    //alert(JSON.stringify(JSON.parse(b)[0].fields));
+                    //s.rows.push(JSON.parse(b)[0].fields)
+                    s.rows.push(JSON.parse(b)[0]);
+                };
+                //alert(l);
+                //alert(l[0]);
+                //s.rows=l
+                if (data){
+                        //alert(JSON.stringify(s));
+                        //alert(s);
+                        //alert(data);
+                        //alert(s.rows.fields[0].name);
+                        return s;
+                };
+                {% endcomment %}
+
+            },
+
+        });
+        $('#his').dialog('open');
+	},
+});
+
+</script>
+{% endblock %}

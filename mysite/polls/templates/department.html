@@ -1,0 +1,21 @@
+{% extends 'iframe.html' %}
+{% block getlist %}
+<script Language=JavaScript>
+	$('#dg').datagrid({
+    url:'{% url 'departmentlist' %}',
+    columns:[[
+        {field:'name',title:'部门名称',width:100},
+        {field:'email',title:'Email',width:200},
+    ]],
+    queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+    rownumbers:true,
+    nowrap: false,
+    idField:'id',
+    pagination:true,
+    pageSize:5,
+    pageList:[5,10,20,50],
+    striped : true,
+    singleSelect:true,
+});
+</script>
+{% endblock %}

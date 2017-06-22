@@ -1,0 +1,35 @@
+{% extends 'iframe.html' %}
+{% block getlist %}
+<script Language=JavaScript>
+	$('#dg').datagrid({
+    url:'{% url 'stafflist' %}',
+    columns:[[
+        {field:'name',title:'姓名',width:100},
+        {field:'email',title:'Email',width:200},
+        {field:'tel',title:'电话',width:200},
+        {field:'ipaddress',title:'IP地址',width:100,align:'left'},
+        {field:'entrydata',title:'入职日期',width:150,align:'left'},
+        {field:'department',title:'部门',width:100,formatter:
+                                                            function(value,row,index)
+                                                           {
+                                                               //if(value){return value}
+                                                               //else{return row.department_id}
+                                                               //if(row.department_id==1){return "安全运维部"}
+                                                               //if(row.department_id==2){return "研发一部"}
+                                                               return value
+
+                                                            }
+         }
+    ]],
+    queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+    rownumbers:true,
+    nowrap: false,
+    idField:'pk',
+    pagination:true,
+    pageSize:5,
+    pageList:[5,10,20,50],
+    striped : true,
+    singleSelect:true,
+});
+</script>
+{% endblock %}

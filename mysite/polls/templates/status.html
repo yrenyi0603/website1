@@ -1,0 +1,20 @@
+{% extends 'iframe.html' %}
+{% block getlist %}
+<script Language=JavaScript>
+	$('#dg').datagrid({
+    url:'{% url 'statuslist' %}',
+    columns:[[
+        {field:'status',title:'状态',width:100},
+    ]],
+    queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+    rownumbers:true,
+    nowrap: false,
+    idField:'id',
+    pagination:true,
+    pageSize:5,
+    pageList:[5,10,20,50],
+    striped : true,
+    singleSelect:true,
+});
+</script>
+{% endblock %}
