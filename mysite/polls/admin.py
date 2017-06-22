@@ -9,7 +9,7 @@ class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name','email','colored_name')
 admin.site.register(Department,DepartmentAdmin)
 
-from simple_history.admin import SimpleHistoryAdmin
+#from simple_history.admin import SimpleHistoryAdmin
 from reversion.admin import VersionAdmin
 #@admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):

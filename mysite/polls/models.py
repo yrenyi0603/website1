@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.html import format_html
 from django.core.urlresolvers import reverse
-from field_history.tracker import FieldHistoryTracker
+#from field_history.tracker import FieldHistoryTracker
 # Create your models here.
 import reversion
 from  reversion.signals import pre_revision_commit,post_revision_commit
@@ -74,7 +74,7 @@ class Computer(models.Model):
 #from datetime import datetime
 #from django.core.urlresolvers import reverse
 #from django.db import models
-from simple_history.models import HistoricalRecords
+#from simple_history.models import HistoricalRecords
 @reversion.register(follow=['computer_staffs','department'])
 class Staff(models.Model):
     name=models.CharField(max_length=100,verbose_name=u'姓名')

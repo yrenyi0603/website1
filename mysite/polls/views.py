@@ -255,3 +255,23 @@ class HisListView(DetailView):
         end=page*rows if page*rows < len(context) else len(context)
         return JsonResponse(data={"total": len(context), "rows": context[begin:end]})
 from django.utils.timezone import utc
+import  pandas as pd
+import numpy as np
+from django_pandas.io import read_frame
+class MainView(View):
+
+    def get(self,request):
+        self.get_server_status()
+        return JsonResponse({'status':1})
+    def get_server_status(self):
+        model=Servers
+        #server_qs=read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=('assert_number'))
+        # server_qs = read_frame(qs=model._default_manager.all(),verbose=True)
+        # print(server_qs)
+        server_qs = read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=['id','status','assert_number'])
+
+        #print(server_qs)
+        print(server_qs.count())
+
+        print(server_qs.groupby('status').sum())
+

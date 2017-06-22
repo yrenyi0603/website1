@@ -26,7 +26,7 @@ SECRET_KEY = 'wa%9h_z#d92c0dh)*t=a+cn!04pis^-f1zvo3lkm^r-s!u#s0t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.164.129']
+ALLOWED_HOSTS = ['192.168.164.15']
 
 
 
@@ -34,8 +34,8 @@ BROKER_URL = 'redis://172.31.50.132:6379/0'
 CELERY_RESULT_BACKEND = 'redis://172.31.50.132:6379/0'
 # Application definition
 
-from django.db import models
-FIELD_HISTORY_OBJECT_ID_TYPE = (models.CharField, {'max_length': 100})
+#from django.db import models
+#FIELD_HISTORY_OBJECT_ID_TYPE = (models.CharField, {'max_length': 100})
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
+    #'simple_history.middleware.HistoryRequestMiddleware',
     #'reversion.middleware.RevisionMiddleware',
 ]
 
@@ -94,8 +94,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'mysite1',
         'USER':'root',
-        'PASSWORD':'abc123!@#',
-        'HOST':'172.31.50.30',
+        'PASSWORD':'0',
+        'HOST':'127.0.0.1',
         'PORT':'3306',
         'OPTION':{
             'init_command': "SET default_storage_engine=INNODB;SET sql_mode='STRICT_TRANS_TABLES'",

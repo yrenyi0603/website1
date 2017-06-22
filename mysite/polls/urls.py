@@ -67,6 +67,7 @@ for info in models_info:
 
 urlpatterns = [
     url(r'^$',login_required(views.HomeView.as_view()),name='home' ),
+    url(r'^main/$',login_required(views.MainView.as_view()),name='main' ),
     #url(r'^staff/',include(staff_url)),
     #url(r'^department/',include(department_url)),
     #url(r'^status/',include(status_url)),
