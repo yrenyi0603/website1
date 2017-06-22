@@ -3,4 +3,4 @@ celery>=4.0
 celery[redis]
 mysqlclient
 django-reversion
-python-dateutil
+python-dateutil == 2.6.0
