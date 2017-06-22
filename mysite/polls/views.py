@@ -76,6 +76,7 @@ class MEditView(ManyToManyMixin,RevisionMixin,UpdateView):
     def get(self, request, *args, **kwargs):
         self.kwargs[self.pk_url_kwarg]=request.GET['pk']
         form=self.form_class(instance=self.get_object())
+        print(form)
         return render(request,template_name='editform.html',context={'form':form})
     def post(self, request, *args, **kwargs):
         self.kwargs[self.pk_url_kwarg] = request.POST['pk']
@@ -184,6 +185,10 @@ from reversion.models import Version
 
 class HisListView(DetailView):
     def get_history(self):
+        from dateutil import tz
+        from django.conf import settings
+        to_zone=tz.gettz(settings.TIME_ZONE)
+
         version = Version.objects.get_for_object(obj=self.get_object())
         '''
             如果有外键或者Many-Many Field被删除，则需要手动更新一下version
@@ -197,7 +202,6 @@ class HisListView(DetailView):
 
         context = []
         versions = list(version)
-        '''获取初始化值'''
 
         for index, i in enumerate(versions):
             diffs = {}
@@ -220,13 +224,14 @@ class HisListView(DetailView):
                             value_old = self.get_relate_fields(model=model_relate, values=value_old)
                         diff_context = '<br>'.join([diff_context, '修改子段："{0}",由 "{2}" 修改为 "{1}" ;'.format(
                             self.model._meta.get_field(c).verbose_name, value_new, value_old)])
-                    diffs['time'] = i.revision.date_created
+                    diffs['time'] = i.revision.date_created.astimezone(to_zone).strftime('%Y-%m-%d %H:%M:%S')
                     diffs['context'] = diff_context.strip('<br>')
                     context.append(diffs)
                 else:
                     pass
+        '''获取初始化值'''
         if versions[-1].revision.comment == histag.get('add'):
-            context.append({'time':versions[-1].revision.date_created,'context':'添加'})
+            context.append({'time':versions[-1].revision.date_created.astimezone(to_zone).strftime('%Y-%m-%d %H:%M:%S'),'context':'添加'})
         return context
     def get_relate_fields(self, model, values):
         temp = []
@@ -249,3 +254,4 @@ class HisListView(DetailView):
         begin=(page-1)*rows if page>1 else 0
         end=page*rows if page*rows < len(context) else len(context)
         return JsonResponse(data={"total": len(context), "rows": context[begin:end]})
+from django.utils.timezone import utc

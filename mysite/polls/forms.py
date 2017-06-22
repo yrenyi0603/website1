@@ -18,6 +18,7 @@ class MModelForm(ModelForm):
                 css='easyui-combobox'
             elif isinstance(value,forms.widgets.DateInput):
                 css='easyui-datebox'
+                other_option = "formatter:myformatter,parser:myparser"
             elif isinstance(value, forms.widgets.DateTimeInput):
                 css='easyui-datetimebox'
             elif isinstance(value,forms.widgets.Textarea):
