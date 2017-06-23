@@ -258,20 +258,37 @@ from django.utils.timezone import utc
 import  pandas as pd
 import numpy as np
 from django_pandas.io import read_frame
-class MainView(View):
+from rest_framework import viewsets
+from rest_framework.response import Response
+class MainView(viewsets.ViewSet):
 
-    def get(self,request):
-        self.get_server_status()
-        return JsonResponse({'status':1})
+    def list(self,request):
+        a=self.get_server_status()
+        return Response(a)
     def get_server_status(self):
+        from .models import Servers
         model=Servers
         #server_qs=read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=('assert_number'))
         # server_qs = read_frame(qs=model._default_manager.all(),verbose=True)
         # print(server_qs)
-        server_qs = read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=['id','status','assert_number'])
+        from .serializer.modelserializer import ServerSerializer
+        serializer=ServerSerializer(model.objects.all(),many=True)
+        print(serializer)
+        print(serializer.data)
+        #print(list(serializer.data))
+        df=pd.DataFrame(serializer.data,index=[i['id'] for i in serializer.data])
+        #print(df)
+        #df=pd.read_json(serializer.data)
+        #server_qs = read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=['id','status','assert_number'])
+        df['status']=df['status'].fillna('other')
+        #df['status']=df['status'].astype(int)
+        #print(df.groupby('status')['id'].count())
+        #print(df.groupby('status').get_group(5.0))
+        return df.groupby('status').size().to_json()
+        #print(df.groupby('status').aggregate(pd.np.count_nonzero))
 
         #print(server_qs)
-        print(server_qs.count())
+        #print(server_qs.count())
 
-        print(server_qs.groupby('status').sum())
+        #print(server_qs.groupby('status').sum())
 
