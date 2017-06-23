@@ -263,8 +263,19 @@ from rest_framework.response import Response
 class MainView(viewsets.ViewSet):
 
     def list(self,request):
-        a=self.get_server_status()
-        return Response(a)
+
+        a=json.loads(self.get_server_status())
+        print(a.items())
+        b={}
+        b['items']=a.keys()
+        b['values']=[]
+        for i,j in a.items():
+            temp={}
+            temp['name']=i
+            temp['value']=j
+            b['values'].append(temp)
+        print(b)
+        return Response(b)
     def get_server_status(self):
         from .models import Servers
         model=Servers
@@ -273,8 +284,8 @@ class MainView(viewsets.ViewSet):
         # print(server_qs)
         from .serializer.modelserializer import ServerSerializer
         serializer=ServerSerializer(model.objects.all(),many=True)
-        print(serializer)
-        print(serializer.data)
+        # print(serializer)
+        # print(serializer.data)
         #print(list(serializer.data))
         df=pd.DataFrame(serializer.data,index=[i['id'] for i in serializer.data])
         #print(df)
