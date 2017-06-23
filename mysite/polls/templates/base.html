@@ -117,8 +117,8 @@
 									}]
 								});
 
-								var myChart2 = echarts.init(document.getElementById('pie2'));
-								myChart2.setOption({
+								var myChart3 = echarts.init(document.getElementById('pie2'));
+								myChart3.setOption({
 									title : {
 										text: '服务器状态',
 										subtext: '纯属虚构',
@@ -150,8 +150,8 @@
 										}
 									]
 								});
-								var myChart3 = echarts.init(document.getElementById('container'));
-								myChart3.setOption( {
+								var myChart2 = echarts.init(document.getElementById('container'));
+								myChart2.setOption( {
 									title: {
 										x: 'center',
 										text: '资产数量统计',
@@ -221,29 +221,29 @@
 									//alert(data.values);
 									myChart2.setOption({
 										legend: {
-											data:data.items
+											data:data.count.items
 										},
 										series: [{
 											name: '服务器状态',
-											data:data.values
+											data:data.count.values
 										}]
 									});
 									myChart1.setOption({
 										xAxis: {
-											data:data.items
+											data:data.count.items
 										},
 										series: [{
 											name: '数量',
-											data:data.values
+											data:data.count.values
 										}]
 									});
 									myChart3.setOption({
 										xAxis: {
-											data:data.items
+											data:data.status.items
 										},
 										series: [{
 											name: '资产数量统计',
-											data:data.values
+											data:data.status.values
 										}]
 									});
 								});
