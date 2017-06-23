@@ -26,7 +26,7 @@ SECRET_KEY = 'wa%9h_z#d92c0dh)*t=a+cn!04pis^-f1zvo3lkm^r-s!u#s0t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.164.15']
+ALLOWED_HOSTS = ['192.168.164.15','192.168.164.129']
 
 
 
@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'polls',
     'reversion',
+    'rest_framework',
     #'simple_history',
+
     #'field_history',
     #'django_celery_beat',
 #    'djcelery',
@@ -94,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'mysite1',
         'USER':'root',
-        'PASSWORD':'0',
-        'HOST':'127.0.0.1',
+        'PASSWORD':'abc123!@#',
+        'HOST':'172.31.50.30',
         'PORT':'3306',
         'OPTION':{
             'init_command': "SET default_storage_engine=INNODB;SET sql_mode='STRICT_TRANS_TABLES'",
