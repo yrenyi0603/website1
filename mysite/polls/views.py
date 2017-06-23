@@ -267,13 +267,19 @@ class MainView(viewsets.ViewSet):
         a=json.loads(self.get_server_status())
         print(a.items())
         b={}
-        b['items']=a.keys()
-        b['values']=[]
+        b['status']={}
+        b['status']['items']=a.keys()
+        b['status']['values']=[]
+        b['count']={}
+        b['count']['items']=['计算机主机','服务器主机']
+        pc_count=Computer.objects.count()
+        server_count = Servers.objects.count()
+        b['count']['values'] = [pc_count,server_count]
         for i,j in a.items():
             temp={}
             temp['name']=i
             temp['value']=j
-            b['values'].append(temp)
+            b['status']['values'].append(temp)
         print(b)
         return Response(b)
     def get_server_status(self):
