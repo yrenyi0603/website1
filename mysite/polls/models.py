@@ -137,6 +137,15 @@ class Emailcheck(models.Model):
         return self.email
     def natural_key(self):
         return self.email
+    def save(self, force_insert=False, force_update=False, using=None,update_fields=None):
+        if not self.name:
+            try:
+                self.name=Staff.objects.get(email__exact=self.email).name
+            except Exception as e:
+                pass
+        else:
+            pass
+        super(Emailcheck,self).save()
 
 
 
