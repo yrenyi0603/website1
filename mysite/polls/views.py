@@ -98,7 +98,7 @@ class MAddView(ManyToManyMixin,CreateView):
     form_class = None
 
     def form_valid(self, form):
-        print(form)
+        # print(form)
         '''记录add相关子段的revevision'''
         with reversion.create_revision():
             self.object=form.save()
@@ -110,7 +110,7 @@ class MAddView(ManyToManyMixin,CreateView):
         return JsonResponse(data={'status':SUCCESS})
 
     def form_invalid(self, form):
-        print(form)
+        # print(form)
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
