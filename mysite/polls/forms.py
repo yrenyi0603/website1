@@ -134,10 +134,20 @@ class EmailCheckModelForm(MModelForm):
     class Meta:
         model = Emailcheck
         fields = '__all__'
-
-    def save(self, commit=True):
-        print(self.cleaned_data)
-        super(EmailCheckModelForm,self).save(commit=True)
-
-
-
+    #
+    # def save(self, commit=True):
+    #
+    #     #print(self.cleaned_data)
+    #     if  not self.cleaned_data['name']:
+    #         try:
+    #             #opts = self._meta
+    #             #print('111111111111111111:{0}'.format(opts))
+    #             #self.instance = self._meta.model()
+    #             print(self.cleaned_data['email'])
+    #             obj=Staff._default_manager.get(email__exact = self.cleaned_data['email'])
+    #             self.
+    #         except Exception as e:
+    #             print('----------------------')
+    #             print(e)
+    #             print('----------------------')
+    #     return  super(EmailCheckModelForm,self).save(commit=True)
