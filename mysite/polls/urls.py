@@ -46,12 +46,16 @@ computer_info={
 emailcheck_info={
     'model':Emailcheck,
     'form_class':EmailCheckModelForm,
-    #'editview':views.ComputerEditView,
+}
+
+powercheck_info={
+    'model':Powercheck,
+    'form_class':PowercheckForm,
 }
 
 urls=[]
 
-models_info=[staff_info,server_info,zone_info,status_info,department_info,os_info,manufacturer_info,computer_info,emailcheck_info]
+models_info=[staff_info,server_info,zone_info,status_info,department_info,os_info,manufacturer_info,computer_info,emailcheck_info,powercheck_info]
 for info in models_info:
     model=info['model']
     modelname = model._meta.verbose_name
@@ -84,4 +88,4 @@ urlpatterns = [
     #url(r'^server/',include(server_url)),
 ]
 urlpatterns.extend(urls)
-print(urlpatterns)
+# print(urlpatterns)
