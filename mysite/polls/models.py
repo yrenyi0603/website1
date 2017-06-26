@@ -148,4 +148,36 @@ class Emailcheck(models.Model):
         super(Emailcheck,self).save()
 
 
+@reversion.register()
+class Powercheck(models.Model):
+    CHECKSTATUS = (
+        ("Enable", 'Enable'),
+        ("Disable", 'Disable'),
+    )
+    ipaddress=models.GenericIPAddressField(unique=True,verbose_name=u'IP地址')
+    email=models.EmailField(verbose_name=u'所有者邮箱地址',blank=True,null=True)
+    name=models.CharField(max_length=100,blank=True,null=True,verbose_name=u'所有者')
+    status=models.CharField(max_length=10,verbose_name=u'状态',choices=CHECKSTATUS,default='enable')
+    remarks=models.TextField(max_length=200,null=True,blank=True,verbose_name=u'备注')
+    def __str__(self):
+        return self.ipaddress
+    def natural_key(self):
+        return self.ipaddress
+
+    def save(self, force_insert=False, force_update=False, using=None,update_fields=None):
+        if not self.name:
+            try:
+                self.name=Staff.objects.get(ipaddress__exact=self.ipaddress).name
+            except Exception as e:
+                pass
+        else:
+            pass
+        if not self.email:
+            try:
+                self.email = Staff.objects.get(ipaddress__exact=self.ipaddress).email
+            except Exception as e:
+                pass
+        else:
+            pass
+        super(Powercheck,self).save()
 
