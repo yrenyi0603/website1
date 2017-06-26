@@ -127,5 +127,16 @@ class Servers(models.Model):
         unique_together = ('name', 'ipaddress')
     '''
 
+@reversion.register()
+class Emailcheck(models.Model):
+    email=models.EmailField(unique=True,verbose_name='邮箱地址')
+    name=models.CharField(max_length=100,blank=True,null=True,verbose_name=u'姓名')
+    lastcgdate=models.DateField(blank=True,null=True,verbose_name=u'密码更新日期')
+    remarks=models.TextField(max_length=200,null=True,blank=True,verbose_name=u'备注')
+    def __str__(self):
+        return self.email
+    def natural_key(self):
+        return self.email
+
 
 

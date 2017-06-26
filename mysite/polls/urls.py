@@ -43,9 +43,15 @@ computer_info={
     'form_class':ComputerForm,
     #'editview':views.ComputerEditView,
 }
+emailcheck_info={
+    'model':Emailcheck,
+    'form_class':EmailCheckModelForm,
+    #'editview':views.ComputerEditView,
+}
+
 urls=[]
 
-models_info=[staff_info,server_info,zone_info,status_info,department_info,os_info,manufacturer_info,computer_info]
+models_info=[staff_info,server_info,zone_info,status_info,department_info,os_info,manufacturer_info,computer_info,emailcheck_info]
 for info in models_info:
     model=info['model']
     modelname = model._meta.verbose_name
@@ -58,7 +64,7 @@ for info in models_info:
     if not editview:
         editview= views.MEditView
 
-    urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model)),name=modelname))
+    urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model,form_class=formclass)),name=modelname))
     urls.append(url('{0}/list/$'.format(modelname),login_required(model_listview.as_view(model=model)),name='{0}list'.format(modelname)))
     urls.append(url('{0}/add/$'.format(modelname), login_required(views.MAddView.as_view(model=model,form_class=formclass)),name='add{0}'.format(modelname)))
     urls.append(url('{0}/update/$'.format(modelname), login_required(editview.as_view(model=model, form_class=formclass)),name='update{0}'.format(modelname)))
@@ -68,6 +74,7 @@ for info in models_info:
 urlpatterns = [
     url(r'^$',login_required(views.HomeView.as_view()),name='home' ),
     url(r'^main/$',login_required(views.MainView.as_view({'get':'list'})),name='main' ),
+    #url(r'^emailcheck/$',login_required(views.EmailCheckView.as_view()),name='emailcheck' ),
     #url(r'^staff/',include(staff_url)),
     #url(r'^department/',include(department_url)),
     #url(r'^status/',include(status_url)),
@@ -77,3 +84,4 @@ urlpatterns = [
     #url(r'^server/',include(server_url)),
 ]
 urlpatterns.extend(urls)
+print(urlpatterns)

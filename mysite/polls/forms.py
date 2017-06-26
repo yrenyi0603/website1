@@ -130,7 +130,14 @@ class ComputerForm(MModelForm):
         model = Computer
         fields = '__all__'
 
+class EmailCheckModelForm(MModelForm):
+    class Meta:
+        model = Emailcheck
+        fields = '__all__'
 
+    def save(self, commit=True):
+        print(self.cleaned_data)
+        super(EmailCheckModelForm,self).save(commit=True)
 
 
 

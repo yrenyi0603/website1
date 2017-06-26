@@ -34,13 +34,14 @@ from .tasks import *
 class MModelView(TemplateView,FormMixin):
     model = None
     template_name = 'manufacturers.html'
-    def get_form_class(self):
-        if (not self.form_class):
-            form_name = '{0}Form'.format(self.model.__name__)
-            mod = __import__(self.model._meta.app_label, fromlist=('forms'))
-            class_form = getattr(mod.forms, form_name, None)
-            return class_form
-        return  self.form_class
+    form_class = None
+    # def get_form_class(self):
+    #     if (not self.form_class):
+    #         form_name = '{0}Form'.format(self.model.__name__)
+    #         mod = __import__(self.model._meta.app_label, fromlist=('forms'))
+    #         class_form = getattr(mod.forms, form_name, None)
+    #         return class_form
+    #     return  self.form_class
 
     def get_context_data(self, **kwargs):
         context=super(MModelView,self).get_context_data(**kwargs)
@@ -265,7 +266,7 @@ class MainView(viewsets.ViewSet):
     def list(self,request):
 
         a=json.loads(self.get_server_status())
-        print(a.items())
+        #print(a.items())
         b={}
         b['status']={}
         b['status']['items']=a.keys()
@@ -280,7 +281,7 @@ class MainView(viewsets.ViewSet):
             temp['name']=i
             temp['value']=j
             b['status']['values'].append(temp)
-        print(b)
+        #print(b)
         return Response(b)
     def get_server_status(self):
         from .models import Servers
@@ -294,7 +295,9 @@ class MainView(viewsets.ViewSet):
         # print(serializer.data)
         #print(list(serializer.data))
         df=pd.DataFrame(serializer.data,index=[i['id'] for i in serializer.data])
-        #print(df)
+        #print(df.empty)
+        if  df.empty:
+            return '{}'
         #df=pd.read_json(serializer.data)
         #server_qs = read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=['id','status','assert_number'])
         df['status']=df['status'].fillna('other')
@@ -308,4 +311,24 @@ class MainView(viewsets.ViewSet):
         #print(server_qs.count())
 
         #print(server_qs.groupby('status').sum())
+class EmailcheckView(ListView):
+    model=Emailcheck
+    def tet(self):
+        from .serializer.modelserializer import EmailCheckModelSerializer
+        serializer = EmailCheckModelSerializer(self.model.objects.all(), many=True)
+        print(serializer)
+        df=pd.DataFrame(data=serializer.data)
+        if df.empty:
+            print(df
+                  )
+            return '1'
+        else:
+            print(df)
+    def get_queryset(self):
+        self.tet()
+        return self.model._default_manager.all()
+    def post(self):
+        return JsonResponse({'status':1})
+
+
 

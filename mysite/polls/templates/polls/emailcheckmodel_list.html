@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>安全运维部管理终端</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/easyui.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static '/css/icon.css' %}">
+	<script type="text/javascript" src="{% static '/js/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/jquery.easyui.min.js' %}"></script>
+
+</head>
+<body>
+    <h2>Cascade CheckBox in TreeGrid</h2>
+	<p>TreeGrid nodes with cascade check boxes.</p>
+	<div style="margin:20px 0;"></div>
+	<table title="Folder Browser" class="easyui-treegrid" style="width:700px;height:250px"
+			data-options="
+				url: '{}',
+				method: 'get',
+				checkbox: true,
+				rownumbers: true,
+				idField: 'id',
+				treeField: 'name'
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'email'" width="220">邮箱地址</th>
+				<th data-options="field:'name'" width="100" align="right">姓名</th>
+				<th data-options="field:'lastupdate'" width="150">上次更新日期</th>
+			</tr>
+		</thead>
+	</table>
+</body>
+</html>

@@ -76,7 +76,15 @@
                   </ul>
 				</div>
 				<div title="任务管理" style="padding:10px">
-					content3
+					<ul>
+						<li>
+							<span>
+								<a href="#" class="easyui-linkbutton" onclick="addTab('邮箱密码到期提醒','{% url 'emailcheck' %}')">
+									邮箱密码到期提醒
+								</a>
+							</span>
+						</li>
+					</ul>
 				</div>
 		</div>
 	</div>
@@ -124,6 +132,14 @@
 										subtext: '纯属虚构',
 										x:'center'
 									},
+									toolbox: {
+										show: true,
+										feature: {
+											dataView: {show: false, readOnly: false},
+											restore: {show: false},
+											saveAsImage: {show: true}
+										}
+									},
 									tooltip : {
 										trigger: 'item',
 										formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -158,8 +174,10 @@
 										subtext: '纯属虚构',
 										link: 'https://buy.wosign.com'
 									},
-									tooltip: {
-										trigger: 'item'
+
+									tooltip : {
+										trigger: 'item',
+										formatter: "{a} <br/>{b} : {c} "
 									},
 									toolbox: {
 										show: true,
@@ -215,37 +233,46 @@
 										}
 									]
 								});
+								$(document).ready(function(){
+									setInterval(function(){
+										$.ajax({
+											url:'{% url 'main'  %}?format=json',
+											dataType:'json',
+											success:function (data)
+											{
 
-								$.get('{% url 'main'  %}?format=json').done(function (data){
-									//alert(data.items);
-									//alert(data.values);
-									myChart2.setOption({
-										legend: {
-											data:data.count.items
-										},
-										series: [{
-											name: '服务器状态',
-											data:data.count.values
-										}]
-									});
-									myChart1.setOption({
-										xAxis: {
-											data:data.count.items
-										},
-										series: [{
-											name: '数量',
-											data:data.count.values
-										}]
-									});
-									myChart3.setOption({
-										xAxis: {
-											data:data.status.items
-										},
-										series: [{
-											name: '资产数量统计',
-											data:data.status.values
-										}]
-									});
+												//alert(data.items);
+												//alert(data.values);
+												myChart2.setOption({
+													legend: {
+														data:data.count.items
+													},
+													series: [{
+														//name: '服务器状态',
+														data:data.count.values
+													}]
+												});
+												myChart1.setOption({
+													xAxis: {
+														data:data.count.items
+													},
+													series: [{
+														name: '数量',
+														data:data.count.values
+													}]
+												});
+												myChart3.setOption({
+													legend: {
+														data:data.status.items
+													},
+													series: [{
+
+														data:data.status.values
+													}]
+												});
+											},
+										});
+									},10000);
 								});
 							});
 
