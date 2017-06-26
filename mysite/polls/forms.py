@@ -130,7 +130,12 @@ class ComputerForm(MModelForm):
         model = Computer
         fields = '__all__'
 
+class PowercheckForm(MModelForm):
+    class Meta:
+        model = Powercheck
+        fields = '__all__'
 class EmailCheckModelForm(MModelForm):
+
     class Meta:
         model = Emailcheck
         fields = '__all__'
