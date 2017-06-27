@@ -13,12 +13,15 @@ class ServerSerializer(serializers.ModelSerializer):
         fields=('id','status','assert_number')
 
 
-class EmailCheckModelSerializer(serializers.ModelSerializer):
+class StaffSerializer(serializers.ModelSerializer):
     # status=serializers.StringRelatedField(
     #     #many=True,
     #     #read_only=True,
     #     #slug_field='status'
     # )
+    department=serializers.StringRelatedField(
+        read_only=True
+    )
     class Meta:
-        model= Emailcheck
-        fields=('id','email','name','lastcgdate','remarks')
+        model= Staff
+        fields=('id','email','name','ipaddress','department')
