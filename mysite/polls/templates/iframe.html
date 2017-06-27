@@ -16,6 +16,7 @@
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newobj()">New</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editobj()">Edit</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyobj()">Remove</a>
+
 		</div>
 		<div style="margin:20px 0;"></div>
 		<div id="dlg" class="easyui-dialog" style="height:400px;width:100%;max-width:400px;padding:10px 40px 20px 40px;"
@@ -32,8 +33,10 @@
 			<!--
 			<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
 			-->
+
 			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveobj()">Save</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+
 		</div>
 		<div>
 			{{ form.mtype.value }}
