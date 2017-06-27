@@ -11,25 +11,28 @@
 
 </head>
 <body>
-    <h2>Cascade CheckBox in TreeGrid</h2>
-	<p>TreeGrid nodes with cascade check boxes.</p>
-	<div style="margin:20px 0;"></div>
-	<table title="Folder Browser" class="easyui-treegrid" style="width:700px;height:250px"
-			data-options="
-				url: '{}',
-				method: 'get',
-				checkbox: true,
-				rownumbers: true,
-				idField: 'id',
-				treeField: 'name'
-			">
-		<thead>
-			<tr>
-				<th data-options="field:'email'" width="220">邮箱地址</th>
-				<th data-options="field:'name'" width="100" align="right">姓名</th>
-				<th data-options="field:'lastupdate'" width="150">上次更新日期</th>
-			</tr>
-		</thead>
-	</table>
+    <h2>CheckBox Tree</h2>
+	<p>Tree nodes with check boxes.</p>
+	<div style="margin:20px 0;">
+		<a href="#" class="easyui-linkbutton" onclick="getChecked()">GetChecked</a>
+	</div>
+	<div style="margin:10px 0">
+		<input type="checkbox" checked onchange="$('#tt').tree({cascadeCheck:$(this).is(':checked')})">CascadeCheck
+		<input type="checkbox" onchange="$('#tt').tree({onlyLeafCheck:$(this).is(':checked')})">OnlyLeafCheck
+	</div>
+	<div class="easyui-panel" style="padding:5px">
+		<ul id="tt" class="easyui-tree" data-options="url:'tree_data1.json',method:'get',animate:true,checkbox:true"></ul>
+	</div>
+	<script type="text/javascript">
+		function getChecked(){
+			var nodes = $('#tt').tree('getChecked');
+			var s = '';
+			for(var i=0; i<nodes.length; i++){
+				if (s != '') s += ',';
+				s += nodes[i].text;
+			}
+			alert(s);
+		}
+	</script>
 </body>
 </html>
