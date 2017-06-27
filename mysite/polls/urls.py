@@ -45,6 +45,7 @@ computer_info={
 }
 emailcheck_info={
     'model':Emailcheck,
+    'addview':views.EmailcheckaddView,
     'form_class':EmailCheckModelForm,
 }
 
@@ -68,9 +69,13 @@ for info in models_info:
     if not editview:
         editview= views.MEditView
 
+    addview=info.get('addview',None)
+    if not addview:
+        addview= views.MAddView
+
     urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model,form_class=formclass)),name=modelname))
     urls.append(url('{0}/list/$'.format(modelname),login_required(model_listview.as_view(model=model)),name='{0}list'.format(modelname)))
-    urls.append(url('{0}/add/$'.format(modelname), login_required(views.MAddView.as_view(model=model,form_class=formclass)),name='add{0}'.format(modelname)))
+    urls.append(url('{0}/add/$'.format(modelname), login_required(addview.as_view(model=model,form_class=formclass)),name='add{0}'.format(modelname)))
     urls.append(url('{0}/update/$'.format(modelname), login_required(editview.as_view(model=model, form_class=formclass)),name='update{0}'.format(modelname)))
     urls.append(url('{0}/delete/$'.format(modelname), login_required(views.MDeleteView.as_view(model=model)),name='delete{0}'.format(modelname)))
     urls.append(url('{0}/history/$'.format(modelname), login_required(views.HisListView.as_view(model=model)),name='history{0}'.format(modelname)))
