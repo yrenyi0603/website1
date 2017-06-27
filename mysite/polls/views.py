@@ -111,16 +111,27 @@ class MAddView(ManyToManyMixin,CreateView):
 
     def form_invalid(self, form):
         # print(form)
-        print('=========================invalid:{0}'.format(form.errors.as_json()))
+        #print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
 
 class EmailcheckaddView(MAddView):
     def form_valid(self, form):
-        print('---------------{0}'.format(form.cleaned_data))
-        form=self.form_class()
-        super(EmailcheckaddView,self).form_valid(form=form)
+        try:
+            with reversion.create_revision():
+                total=len(form.cleaned_data['email'])
+                for i in form.cleaned_data['email']:
+                    if form.cleaned_data['email'].index(i) == total -1:
+                        self.model(email=i,name=form.cleaned_data['name'],
+                                   lastcgdate=form.cleaned_data['lastcgdate'],
+                                   remarks=form.cleaned_data['remarks']).save()
+                    else:
+                        self.model(email=i).save()
+                    reversion.set_comment(histag.get('add'))
+        except Exception as e:
+            pass
+        return JsonResponse(data={'status': SUCCESS})
 
 class MDeleteView(RevisionMixin,DeleteView):
     model = None

@@ -155,13 +155,16 @@ class MultiEmailField(forms.Field):
 
         for email in value:
             validate_email(email)
-
+def validate_even(value):
+    for email in value:
+        validate_email(email)
 class EmailCheckModelForm(MModelForm):
-    email = MultiEmailField(label=u'邮箱', required=False)
+    # email = MultiEmailField(label=u'邮箱', required=False)
     mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='mailcheck')
     # staffemails=forms.CharField(widget=forms.Textarea,label=u'员工邮箱')
+    email=forms.EmailField(required=False)
+    #email = forms.EmailField(required=False,validators=[validate_even()])
     staffemails=MultiEmailField(label=u'员工邮箱',required=False,widget=forms.Textarea)
-
     class Meta:
         model = Emailcheck
         fields = ['name','lastcgdate','remarks']
@@ -169,29 +172,38 @@ class EmailCheckModelForm(MModelForm):
     # def save(self, commit=True):
     #     print(self.cleaned_data)
     #     return  super(EmailCheckModelForm,self).save()
-    def full_clean(self):
-        # print(self.cleaned_data)
-        return  super(EmailCheckModelForm, self).full_clean()
+    # def full_clean(self):
+    #     # print(self.cleaned_data)
+    #     return  super(EmailCheckModelForm, self).full_clean()
     def clean_email(self):
-        #print(self.cleaned_data)
-
+        # print(self.cleaned_data)
         data=self.cleaned_data.get('email',None)
-
         if not data:
-            if self.cleaned_data.get('staffemails',None):
+            if not self.cleaned_data.get('staffemails',None):
                 self.add_error('email', u'email和staffemails必须有一项有值')
+                #raise ValidationError('email', u'email和staffemails必须有一项有值')
             else:
                data = self.cleaned_data.get('staffemails')
-        print('==============clean_email:{0}'.format(data))
+        # print('==============clean_email:{0}'.format(data))
         return data
 
     #
     def clean(self):
         cleaned_data = super(EmailCheckModelForm, self).clean()
-        print('start============:clean():{0}'.format(cleaned_data))
-        staffemails = cleaned_data.get('staffemails',None)
-        email = cleaned_data.get('email', None)
+        # print('start============:clean():{0}'.format(cleaned_data))
+        staffemails = cleaned_data.get('staffemails',[])
+        email = cleaned_data.get('email')
         if not email and staffemails:
             cleaned_data['email']=cleaned_data.get('staffemails')
-        print('end============:clean():{0}'.format(cleaned_data))
+            cleaned_data['name']=None
+            cleaned_data['lastcgdate'] = None
+            cleaned_data['remarks'] = None
+        if email:
+            # print(type(staffemails))
+            # print(email)
+            staffemails.append(email)
+            # print('-----------email------------------{0}'.format(staffemails))
+
+            cleaned_data['email']=staffemails
+        # print('end============:clean():{0}'.format(cleaned_data))
         return cleaned_data

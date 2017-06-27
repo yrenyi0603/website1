@@ -126,7 +126,12 @@ class Servers(models.Model):
     class Meta:
         unique_together = ('name', 'ipaddress')
     '''
-
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from django.core.validators import validate_email
+def validate_even(value):
+    for email in value:
+        validate_email(email)
 @reversion.register()
 class Emailcheck(models.Model):
     email=models.EmailField(unique=True,verbose_name='邮箱地址')
