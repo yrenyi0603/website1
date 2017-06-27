@@ -164,7 +164,7 @@ class EmailCheckModelForm(MModelForm):
 
     class Meta:
         model = Emailcheck
-        fields = ['email','name','lastcgdate','remarks']
+        fields = ['name','lastcgdate','remarks']
 
     # def save(self, commit=True):
     #     print(self.cleaned_data)
