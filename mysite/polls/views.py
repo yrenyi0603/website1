@@ -116,7 +116,11 @@ class MAddView(ManyToManyMixin,CreateView):
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
 
-
+class EmailcheckaddView(MAddView):
+    def form_valid(self, form):
+        print('---------------{0}'.format(form.cleaned_data))
+        form=self.form_class()
+        super(EmailcheckaddView,self).form_valid(form=form)
 
 class MDeleteView(RevisionMixin,DeleteView):
     model = None
