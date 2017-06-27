@@ -134,25 +134,64 @@ class PowercheckForm(MModelForm):
     class Meta:
         model = Powercheck
         fields = '__all__'
+
+from django import forms
+from django.core.validators import validate_email
+
+class MultiEmailField(forms.Field):
+    def to_python(self, value):
+        "Normalize data to a list of strings."
+
+        # Return an empty list if no input was given.
+        if not value:
+            return []
+        return value.split(',')
+
+    def validate(self, value):
+        "Check if value consists only of valid emails."
+
+        # Use the parent's handling of required fields, etc.
+        super(MultiEmailField, self).validate(value)
+
+        for email in value:
+            validate_email(email)
+
 class EmailCheckModelForm(MModelForm):
+    email = MultiEmailField(label=u'邮箱', required=False)
+    mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='mailcheck')
+    # staffemails=forms.CharField(widget=forms.Textarea,label=u'员工邮箱')
+    staffemails=MultiEmailField(label=u'员工邮箱',required=False,widget=forms.Textarea)
 
     class Meta:
         model = Emailcheck
-        fields = '__all__'
-    #
+        fields = ['email','name','lastcgdate','remarks']
+
     # def save(self, commit=True):
+    #     print(self.cleaned_data)
+    #     return  super(EmailCheckModelForm,self).save()
+    def full_clean(self):
+        # print(self.cleaned_data)
+        return  super(EmailCheckModelForm, self).full_clean()
+    def clean_email(self):
+        #print(self.cleaned_data)
+
+        data=self.cleaned_data.get('email',None)
+
+        if not data:
+            if self.cleaned_data.get('staffemails',None):
+                self.add_error('email', u'email和staffemails必须有一项有值')
+            else:
+               data = self.cleaned_data.get('staffemails')
+        print('==============clean_email:{0}'.format(data))
+        return data
+
     #
-    #     #print(self.cleaned_data)
-    #     if  not self.cleaned_data['name']:
-    #         try:
-    #             #opts = self._meta
-    #             #print('111111111111111111:{0}'.format(opts))
-    #             #self.instance = self._meta.model()
-    #             print(self.cleaned_data['email'])
-    #             obj=Staff._default_manager.get(email__exact = self.cleaned_data['email'])
-    #             self.
-    #         except Exception as e:
-    #             print('----------------------')
-    #             print(e)
-    #             print('----------------------')
-    #     return  super(EmailCheckModelForm,self).save(commit=True)
+    def clean(self):
+        cleaned_data = super(EmailCheckModelForm, self).clean()
+        print('start============:clean():{0}'.format(cleaned_data))
+        staffemails = cleaned_data.get('staffemails',None)
+        email = cleaned_data.get('email', None)
+        if not email and staffemails:
+            cleaned_data['email']=cleaned_data.get('staffemails')
+        print('end============:clean():{0}'.format(cleaned_data))
+        return cleaned_data

@@ -111,6 +111,7 @@ class MAddView(ManyToManyMixin,CreateView):
 
     def form_invalid(self, form):
         # print(form)
+        print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
@@ -313,24 +314,62 @@ class MainView(viewsets.ViewSet):
         #print(server_qs.count())
 
         #print(server_qs.groupby('status').sum())
-class EmailcheckView(ListView):
-    model=Emailcheck
+class EmailcheckView(View):
+    model=Staff
     def tet(self):
-        from .serializer.modelserializer import EmailCheckModelSerializer
-        serializer = EmailCheckModelSerializer(self.model.objects.all(), many=True)
-        print(serializer)
+        from .serializer.modelserializer import StaffSerializer
+        serializer = StaffSerializer(self.get_queryset(), many=True)
+        #print(serializer)
         df=pd.DataFrame(data=serializer.data)
         if df.empty:
-            print(df
-                  )
+            #return HttpResponse('fail')
             return '1'
         else:
-            print(df)
+            #print(df)
+            groupd=df.groupby(['department'])
+            #print(groupd.groups)
+
+            tree={}
+            tree['id']=0
+            tree['text']="wosign"
+            tree['children']=[]
+            #tree['state']="closed"
+            root=tree.copy()
+            n=1
+            for i ,j in groupd:
+                subtree={}
+                subtree['id']=n
+                n+=n
+                subtree['text']=i
+                subtree['children']=[]
+                #subtree['state']="closed"
+                for m in j.email:
+                    tree_item={}
+                    tree_item['id']=n
+                    n+=1
+                    tree_item['text']=m
+                    subtree['children'].append(tree_item)
+                    #print(subtree)
+                root['children'].append(subtree)
+
+            #print(root)
+            return root
+        #return HttpResponse('OK')
     def get_queryset(self):
-        self.tet()
+        #self.tet()
         return self.model._default_manager.all()
+    def get(self,request):
+        item=[]
+        item.append(self.tet())
+        """
+            JsonResponse默认只接受dict，要使其接受list，传入safe=False即可
+        """
+        return JsonResponse(item,safe=False)
     def post(self):
         return JsonResponse({'status':1})
+
+class EmailTreeView(TemplateView):
+    template_name = 'tree.html'
 
 
 
