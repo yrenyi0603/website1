@@ -173,31 +173,34 @@ class EmailCheckModelForm(MModelForm):
     #     print(self.cleaned_data)
     #     return  super(EmailCheckModelForm,self).save()
     # def full_clean(self):
-    #     # print(self.cleaned_data)
-    #     return  super(EmailCheckModelForm, self).full_clean()
+    #     #print(self.cleaned_data)
+    #     data=super(EmailCheckModelForm, self).full_clean()
+    #     print('data:{0}'.format(data))
+    #     return data
     def clean_email(self):
-        # print(self.cleaned_data)
+        print(self.cleaned_data)
         data=self.cleaned_data.get('email',None)
         if not data:
-            if not self.cleaned_data.get('staffemails',None):
-                self.add_error('email', u'email和staffemails必须有一项有值')
-                #raise ValidationError('email', u'email和staffemails必须有一项有值')
-            else:
-               data = self.cleaned_data.get('staffemails')
+            self.cleaned_data['name'] = None
+            self.cleaned_data['lastcgdate'] = None
+            self.cleaned_data['remarks'] = None
+            # print(self.cleaned_data.get('staffemails',None))
+            # if not self.cleaned_data.get('staffemails',None):
+            #     self.add_error('email', u'email和staffemails必须有一项有值')
+            #     #raise ValidationError('email', u'email和staffemails必须有一项有值')
+            # else:
+            #    data = self.cleaned_data.get('staffemails')
         # print('==============clean_email:{0}'.format(data))
         return data
 
     #
     def clean(self):
         cleaned_data = super(EmailCheckModelForm, self).clean()
-        # print('start============:clean():{0}'.format(cleaned_data))
+        print('start============:clean():{0}'.format(cleaned_data))
         staffemails = cleaned_data.get('staffemails',[])
         email = cleaned_data.get('email')
         if not email and staffemails:
-            cleaned_data['email']=cleaned_data.get('staffemails')
-            cleaned_data['name']=None
-            cleaned_data['lastcgdate'] = None
-            cleaned_data['remarks'] = None
+            cleaned_data['email']=staffemails
         if email:
             # print(type(staffemails))
             # print(email)

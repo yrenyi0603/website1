@@ -110,27 +110,31 @@ class MAddView(ManyToManyMixin,CreateView):
         return JsonResponse(data={'status':SUCCESS})
 
     def form_invalid(self, form):
-        # print(form)
-        #print('=========================invalid:{0}'.format(form.errors.as_json()))
+        #print(form)
+        # print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
 
 class EmailcheckaddView(MAddView):
     def form_valid(self, form):
+        print('ok')
         try:
             with reversion.create_revision():
                 total=len(form.cleaned_data['email'])
                 for i in form.cleaned_data['email']:
-                    if form.cleaned_data['email'].index(i) == total -1:
-                        self.model(email=i,name=form.cleaned_data['name'],
-                                   lastcgdate=form.cleaned_data['lastcgdate'],
-                                   remarks=form.cleaned_data['remarks']).save()
-                    else:
-                        self.model(email=i).save()
+                    try:
+                        if form.cleaned_data['email'].index(i) == total -1:
+                            self.model(email=i,name=form.cleaned_data['name'],
+                                       lastcgdate=form.cleaned_data['lastcgdate'],
+                                       remarks=form.cleaned_data['remarks']).save()
+                        else:
+                            self.model(email=i).save()
+                    except Exception as e:
+                        return  super(EmailcheckaddView,self).form_invalid(form=form)
                     reversion.set_comment(histag.get('add'))
         except Exception as e:
-            pass
+            print(e)
         return JsonResponse(data={'status': SUCCESS})
 
 class MDeleteView(RevisionMixin,DeleteView):
@@ -372,7 +376,8 @@ class EmailcheckView(View):
         #return HttpResponse('OK')
     def get_queryset(self):
         #self.tet()
-        return self.model._default_manager.all()
+        print('----:{0}'.format(self.model.objects.getcheckemail('email')))
+        return self.model.objects.getcheckemail('email')
     def get(self,request):
         item=[]
         item.append(self.tet())

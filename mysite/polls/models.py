@@ -71,6 +71,14 @@ class Computer(models.Model):
     def __str__(self):
         return self.assert_number
 
+
+
+class Staffmanager(models.Manager):
+    def getcheckemail(self,filed):
+        checkemail=Emailcheck.objects.values(filed)
+        fileds=[i[filed] for i in checkemail]
+        return super(Staffmanager,self).get_queryset().exclude(email__in=fileds)
+
 #from datetime import datetime
 #from django.core.urlresolvers import reverse
 #from django.db import models
@@ -85,7 +93,7 @@ class Staff(models.Model):
     department=models.ForeignKey(Department,null=True,blank=True,on_delete=models.SET_NULL,verbose_name=u'所属部门',related_name='department_staff')
     #computer=models.ManyToManyField('Computer',verbose_name=u'主机信息',related_name='staffs',blank=True,null=True,)
     computers = models.ManyToManyField('Computer', verbose_name=u'主机信息',blank=True, null=True, related_name='staff_computers')
-
+    objects=Staffmanager()
     #history = HistoricalRecords()
     #field_history=FieldHistoryTracker(['name','computer','tel'])
     '''
