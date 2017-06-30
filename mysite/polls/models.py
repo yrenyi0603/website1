@@ -74,8 +74,8 @@ class Computer(models.Model):
 
 
 class Staffmanager(models.Manager):
-    def getcheckemail(self,filed):
-        checkemail=Emailcheck.objects.values(filed)
+    def getcheckemail(self,model,filed):
+        checkemail=model._default_manager.values(filed)
         fileds=[i[filed] for i in checkemail]
         return super(Staffmanager,self).get_queryset().exclude(email__in=fileds)
 

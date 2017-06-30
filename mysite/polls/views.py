@@ -376,8 +376,8 @@ class EmailcheckView(View):
         #return HttpResponse('OK')
     def get_queryset(self):
         #self.tet()
-        print('----:{0}'.format(self.model.objects.getcheckemail('email')))
-        return self.model.objects.getcheckemail('email')
+        print('----:{0}'.format(self.model.objects.getcheckemail(Emailcheck,'email')))
+        return self.model.objects.getcheckemail(Emailcheck,'email')
     def get(self,request):
         item=[]
         item.append(self.tet())
