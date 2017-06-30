@@ -99,7 +99,10 @@
                     closed:false,
                     cache:false,
                     //href:'{{ url.addurl }}',
-                    modal:true
+                    modal:true,
+                    onBeforeOpen:function(){
+                        $("#ttcheck").tree('reload');
+                    },
                 });
                 //$('#chosestaff').dialog('open').dialog('setTitle','员工列表');
                 //url = '{{ url.addurl }}';
