@@ -388,8 +388,8 @@ class EmailcheckView(View):
     def post(self):
         return JsonResponse({'status':1})
 
-class EmailTreeView(TemplateView):
-    template_name = 'tree.html'
+# class EmailTreeView(TemplateView):
+#     template_name = 'tree.html'
 
 
 

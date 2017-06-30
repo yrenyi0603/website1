@@ -84,7 +84,7 @@ urlpatterns = [
     url(r'^$',login_required(views.HomeView.as_view()),name='home' ),
     url(r'^main/$',login_required(views.MainView.as_view({'get':'list'})),name='main' ),
     url(r'^emailcheckt/$',login_required(views.EmailcheckView.as_view()),name='emailcheckt' ),
-    url(r'^emailtree/$',login_required(views.EmailTreeView.as_view()),name='emailtreet' ),
+    # url(r'^emailtree/$',login_required(views.EmailTreeView.as_view()),name='emailtreet' ),
     #url(r'^staff/',include(staff_url)),
     #url(r'^department/',include(department_url)),
     #url(r'^status/',include(status_url)),
