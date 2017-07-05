@@ -129,14 +129,45 @@ class ComputerForm(MModelForm):
     class Meta:
         model = Computer
         fields = '__all__'
+from django import forms
+from django.core.validators import validate_email,validate_ipv4_address
+class MultiIpaddressField(forms.Field):
+    def to_python(self, value):
+        "Normalize data to a list of strings."
+
+        # Return an empty list if no input was given.
+        if not value:
+            return []
+        return value.split(',')
+
+    def validate(self, value):
+        "Check if value consists only of valid ipaddress."
+
+        # Use the parent's handling of required fields, etc.
+        super(MultiIpaddressField, self).validate(value)
+
+        for ip in value:
+            validate_ipv4_address(ip)
 
 class PowercheckForm(MModelForm):
+    mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='powercheck')
+    staffipadderss = MultiIpaddressField(label=u'员工IP地址', required=False, widget=forms.HiddenInput)
     class Meta:
-        model = Powercheck
+        model = PowercheckModel
         fields = '__all__'
+    def clean(self):
+        cleaned_data=super(PowercheckForm, self).clean()
+        staffipadderss=cleaned_data.get('staffipadderss',None)
+        ipaddress=cleaned_data.get('ipaddress',None)
+        if not ipaddress and not staffipadderss:
+            self.add_error('ipaddress',u'at least ,staffipadderss or ipaddress must has value')
+        if not ipaddress:
+            cleaned_data['email'] = ''
+            cleaned_data['name'] = ''
+            cleaned_data['remarks'] = ''
+        print(cleaned_data)
+        return cleaned_data
 
-from django import forms
-from django.core.validators import validate_email
 
 class MultiEmailField(forms.Field):
     def to_python(self, value):
@@ -155,58 +186,22 @@ class MultiEmailField(forms.Field):
 
         for email in value:
             validate_email(email)
-def validate_even(value):
-    for email in value:
-        validate_email(email)
 class EmailCheckModelForm(MModelForm):
-    # email = MultiEmailField(label=u'邮箱', required=False)
     mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='mailcheck')
-    # staffemails=forms.CharField(widget=forms.Textarea,label=u'员工邮箱')
-    email=forms.EmailField(required=False)
-    #email = forms.EmailField(required=False,validators=[validate_even()])
-    staffemails=MultiEmailField(label=u'员工邮箱',required=False,widget=forms.Textarea)
+    staffemails=MultiEmailField(label=u'员工邮箱',required=False,widget=forms.HiddenInput)
     class Meta:
-        model = Emailcheck
-        fields = ['name','lastcgdate','remarks']
-
-    # def save(self, commit=True):
-    #     print(self.cleaned_data)
-    #     return  super(EmailCheckModelForm,self).save()
-    # def full_clean(self):
-    #     #print(self.cleaned_data)
-    #     data=super(EmailCheckModelForm, self).full_clean()
-    #     print('data:{0}'.format(data))
-    #     return data
-    def clean_email(self):
-        print(self.cleaned_data)
-        data=self.cleaned_data.get('email',None)
-        if not data:
-            self.cleaned_data['name'] = None
-            self.cleaned_data['lastcgdate'] = None
-            self.cleaned_data['remarks'] = None
-            # print(self.cleaned_data.get('staffemails',None))
-            # if not self.cleaned_data.get('staffemails',None):
-            #     self.add_error('email', u'email和staffemails必须有一项有值')
-            #     #raise ValidationError('email', u'email和staffemails必须有一项有值')
-            # else:
-            #    data = self.cleaned_data.get('staffemails')
-        # print('==============clean_email:{0}'.format(data))
-        return data
-
-    #
+        model = EmailcheckModel
+        fields = ['email','name','lastcgdate','remarks']
     def clean(self):
         cleaned_data = super(EmailCheckModelForm, self).clean()
-        print('start============:clean():{0}'.format(cleaned_data))
-        staffemails = cleaned_data.get('staffemails',[])
-        email = cleaned_data.get('email')
-        if not email and staffemails:
-            cleaned_data['email']=staffemails
-        if email:
-            # print(type(staffemails))
-            # print(email)
-            staffemails.append(email)
-            # print('-----------email------------------{0}'.format(staffemails))
-
-            cleaned_data['email']=staffemails
+        # print('start============:clean():{0}'.format(cleaned_data))
+        staffemails = cleaned_data.get('staffemails',None)
+        email = cleaned_data.get('email',None)
+        if not email and not staffemails:
+            self.add_error('email', u'email和staffemails必须有一项有值')
+        if not email:
+            cleaned_data['name'] = None
+            cleaned_data['lastcgdate'] = None
+            cleaned_data['remarks'] = None
         # print('end============:clean():{0}'.format(cleaned_data))
         return cleaned_data

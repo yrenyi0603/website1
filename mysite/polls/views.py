@@ -45,12 +45,18 @@ class MModelView(TemplateView,FormMixin):
 
     def get_context_data(self, **kwargs):
         context=super(MModelView,self).get_context_data(**kwargs)
+        mname = self.model._meta.verbose_name
         context['url'] = {
-            'addurl': reverse('add{0}'.format(self.model.__name__.lower())),
-            'editurl': reverse('update{0}'.format(self.model.__name__.lower())),
-            'deleteurl': reverse('delete{0}'.format(self.model.__name__.lower())),
-            'historyurl': reverse('history{0}'.format(self.model.__name__.lower())),
-            'objlist':reverse('{0}list'.format(self.model.__name__.lower()))
+            # 'addurl': reverse('add{0}'.format(self.model.__name__.lower())),
+            'addurl': reverse('add{0}'.format(mname)),
+            'editurl': reverse('update{0}'.format(mname)),
+            'deleteurl': reverse('delete{0}'.format(mname)),
+            'historyurl': reverse('history{0}'.format(mname)),
+            'objlist': reverse('{0}list'.format(mname))
+            # 'editurl': reverse('update{0}'.format(self.model.__name__.lower())),
+            # 'deleteurl': reverse('delete{0}'.format(self.model.__name__.lower())),
+            # 'historyurl': reverse('history{0}'.format(self.model.__name__.lower())),
+            # 'objlist':reverse('{0}list'.format(self.model.__name__.lower()))
         }
         context['form']=self.get_form()
         #print(self.get_form().as_p())
@@ -110,31 +116,59 @@ class MAddView(ManyToManyMixin,CreateView):
         return JsonResponse(data={'status':SUCCESS})
 
     def form_invalid(self, form):
-        #print(form)
-        # print('=========================invalid:{0}'.format(form.errors.as_json()))
+        print(form.cleaned_data)
+        print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         return render(request,template_name='editform.html',context={'form':self.form_class})
 
 class EmailcheckaddView(MAddView):
     def form_valid(self, form):
-        print('ok')
         try:
+            email=form.cleaned_data.get('email',None)
+            email=[email] if email  else []
+            staffemails = form.cleaned_data.get('staffemails', [])
+            email.extend(staffemails)
             with reversion.create_revision():
-                total=len(form.cleaned_data['email'])
-                for i in form.cleaned_data['email']:
+                for i in email:
                     try:
-                        if form.cleaned_data['email'].index(i) == total -1:
+                        if email.index(i) == 0:
                             self.model(email=i,name=form.cleaned_data['name'],
                                        lastcgdate=form.cleaned_data['lastcgdate'],
                                        remarks=form.cleaned_data['remarks']).save()
                         else:
                             self.model(email=i).save()
+                        reversion.set_comment(histag.get('add'))
                     except Exception as e:
                         return  super(EmailcheckaddView,self).form_invalid(form=form)
-                    reversion.set_comment(histag.get('add'))
+
         except Exception as e:
-            print(e)
+            pass
+        return JsonResponse(data={'status': SUCCESS})
+class PowercheckaddView(MAddView):
+    def form_valid(self, form):
+        try:
+            ipaddress=form.cleaned_data.get('ipaddress',None)
+            ipaddress=[ipaddress] if ipaddress  else []
+            temp=ipaddress.copy()
+            staffipadderss = form.cleaned_data.get('staffipadderss', [])
+            ipaddress.extend(staffipadderss)
+            with reversion.create_revision():
+                for i in ipaddress:
+                    try:
+                        if temp:
+                            self.model(ipaddress=i,name=form.cleaned_data['name'],
+                                       email=form.cleaned_data['email'],status=form.cleaned_data['status'],
+                                       remarks=form.cleaned_data['remarks']).save()
+                        else:
+                            self.model(ipaddress=i,status=form.cleaned_data['status']).save()
+                        reversion.set_comment(histag.get('add'))
+                    except Exception as e:
+                        print(e)
+                        return  super(PowercheckaddView,self).form_invalid(form=form)
+
+        except Exception as e:
+            pass
         return JsonResponse(data={'status': SUCCESS})
 
 class MDeleteView(RevisionMixin,DeleteView):
@@ -284,11 +318,8 @@ from django_pandas.io import read_frame
 from rest_framework import viewsets
 from rest_framework.response import Response
 class MainView(viewsets.ViewSet):
-
     def list(self,request):
-
         a=json.loads(self.get_server_status())
-        #print(a.items())
         b={}
         b['status']={}
         b['status']['items']=a.keys()
@@ -303,57 +334,34 @@ class MainView(viewsets.ViewSet):
             temp['name']=i
             temp['value']=j
             b['status']['values'].append(temp)
-        #print(b)
         return Response(b)
     def get_server_status(self):
         from .models import Servers
         model=Servers
-        #server_qs=read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=('assert_number'))
-        # server_qs = read_frame(qs=model._default_manager.all(),verbose=True)
-        # print(server_qs)
         from .serializer.modelserializer import ServerSerializer
         serializer=ServerSerializer(model.objects.all(),many=True)
-        # print(serializer)
-        # print(serializer.data)
-        #print(list(serializer.data))
         df=pd.DataFrame(serializer.data,index=[i['id'] for i in serializer.data])
-        #print(df.empty)
         if  df.empty:
             return '{}'
-        #df=pd.read_json(serializer.data)
-        #server_qs = read_frame(qs=model._default_manager.all(),index_col='id',fieldnames=['id','status','assert_number'])
         df['status']=df['status'].fillna('other')
-        #df['status']=df['status'].astype(int)
-        #print(df.groupby('status')['id'].count())
-        #print(df.groupby('status').get_group(5.0))
         return df.groupby('status').size().to_json()
-        #print(df.groupby('status').aggregate(pd.np.count_nonzero))
 
-        #print(server_qs)
-        #print(server_qs.count())
-
-        #print(server_qs.groupby('status').sum())
-class EmailcheckView(View):
-    model=Staff
-    def tet(self):
+class FieldTreeView(View):
+    model=None
+    field=None
+    def gettree(self,field):
         from .serializer.modelserializer import StaffSerializer
         serializer = StaffSerializer(self.get_queryset(), many=True)
-        #print(serializer)
         df=pd.DataFrame(data=serializer.data)
+        tree = {}
+        tree['id'] = 0
+        tree['text'] = "wosign"
+        tree['children'] = []
+        root = tree.copy()
         if df.empty:
-            #return HttpResponse('fail')
-            return '1'
+            pass
         else:
-            #print(df)
             groupd=df.groupby(['department'])
-            #print(groupd.groups)
-
-            tree={}
-            tree['id']=0
-            tree['text']="wosign"
-            tree['children']=[]
-            #tree['state']="closed"
-            root=tree.copy()
             n=1
             for i ,j in groupd:
                 subtree={}
@@ -361,8 +369,9 @@ class EmailcheckView(View):
                 n+=n
                 subtree['text']=i
                 subtree['children']=[]
-                #subtree['state']="closed"
-                for m in j.email:
+                if getattr(j,field,pd.DataFrame()).empty:
+                    raise TypeError('field {0}  not exist'.format(field))
+                for m in getattr(j,field):
                     tree_item={}
                     tree_item['id']=n
                     n+=1
@@ -370,23 +379,18 @@ class EmailcheckView(View):
                     subtree['children'].append(tree_item)
                     #print(subtree)
                 root['children'].append(subtree)
-
-            #print(root)
-            return root
-        #return HttpResponse('OK')
+        return root
     def get_queryset(self):
-        #self.tet()
-        print('----:{0}'.format(self.model.objects.getcheckemail(Emailcheck,'email')))
-        return self.model.objects.getcheckemail(Emailcheck,'email')
+        return Staff.objects.getcheck(self.model,self.field)
     def get(self,request):
         item=[]
-        item.append(self.tet())
+        item.append(self.gettree(field=self.field))
         """
             JsonResponse默认只接受dict，要使其接受list，传入safe=False即可
         """
         return JsonResponse(item,safe=False)
-    def post(self):
-        return JsonResponse({'status':1})
+    # def post(self):
+    #     return JsonResponse({'status':1})
 
 # class EmailTreeView(TemplateView):
 #     template_name = 'tree.html'

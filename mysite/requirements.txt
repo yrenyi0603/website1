@@ -8,3 +8,8 @@ pandas
 django-pandas == 0.4.3
 django-simple-serializer
 djangorestframework
+#gevent
+#gevent-websocket
+#paramiko
+#tornado
+#kerberos

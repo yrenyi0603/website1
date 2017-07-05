@@ -14,7 +14,7 @@
 	<h2>CheckBox Tree</h2>
 	<p>Tree nodes with check boxes.</p>
 	<div style="margin:20px 0;">
-		<a href="#" class="easyui-linkbutton" onclick="getChecked()">GetChecked</a>
+		<a href="#" class="easyui-linkbutton" onclick="getCheckeds()">GetChecked</a>
 	</div>
 	<div class="easyui-panel" style="padding:5px">
 		<ul id="tt" class="easyui-tree" data-options="
@@ -39,7 +39,7 @@
         </ul>
 	</div>
 	<script type="text/javascript">
-		function getChecked(){
+		function getCheckeds(){
 			var nodes = $('#tt').tree('getChecked');
 			var s = '';
 			for(var i=0; i<nodes.length; i++){

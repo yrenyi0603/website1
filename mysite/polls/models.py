@@ -15,6 +15,8 @@ class Department(models.Model):
         return self.name
     def natural_key(self):
         return self.name
+    class Meta:
+        verbose_name='department'
 
 class StatusManager(models.Manager):
     def get_by_natural_key(self,status):
@@ -27,6 +29,8 @@ class Status(models.Model):
         return (self.status)
     def __str__(self):
         return self.status
+    class Meta:
+        verbose_name='status'
 @reversion.register()
 class Manufacturer(models.Model):
     manufacturer=models.CharField(max_length=100,verbose_name=u'品牌',unique=True)
@@ -34,6 +38,8 @@ class Manufacturer(models.Model):
         return self.manufacturer
     def natural_key(self):
         return self.manufacturer
+    class Meta:
+        verbose_name='manufacturer'
 @reversion.register()
 class Zone(models.Model):
     zone=models.CharField(max_length=100,verbose_name=u'区域',unique=True)
@@ -41,6 +47,8 @@ class Zone(models.Model):
         return self.zone
     def natural_key(self):
         return self.zone
+    class Meta:
+        verbose_name='zone'
 @reversion.register()
 class OS(models.Model):
     os=models.CharField(max_length=100,verbose_name=u'操作系统',unique=True)
@@ -48,6 +56,8 @@ class OS(models.Model):
         return self.os
     def natural_key(self):
         return self.os
+    class Meta:
+        verbose_name='os'
 
 @reversion.register(follow=['staff_computers'])
 class Computer(models.Model):
@@ -70,14 +80,17 @@ class Computer(models.Model):
         return self.assert_number
     def __str__(self):
         return self.assert_number
+    class Meta:
+        verbose_name='computer'
 
 
 
 class Staffmanager(models.Manager):
-    def getcheckemail(self,model,filed):
-        checkemail=model._default_manager.values(filed)
-        fileds=[i[filed] for i in checkemail]
-        return super(Staffmanager,self).get_queryset().exclude(email__in=fileds)
+    def getcheck(self,model,field):
+        check=model._default_manager.values(field)
+        fileds=[i[field] for i in check]
+        paramname={'{0}__in'.format(field):fileds}
+        return super(Staffmanager,self).get_queryset().exclude(**paramname)
 
 #from datetime import datetime
 #from django.core.urlresolvers import reverse
@@ -105,6 +118,7 @@ class Staff(models.Model):
     def __str__(self):
         return self.name
     class Meta:
+        verbose_name='staff'
         ordering=['ipaddress']
         unique_together = ('name','ipaddress')
 @reversion.register()
@@ -122,6 +136,8 @@ class Servers(models.Model):
     purpose=models.CharField(max_length=100,verbose_name=u'用途',blank=True,null=True)
     os=models.ForeignKey(OS, null=True, blank=True, on_delete=models.SET_NULL,verbose_name=u'操作系统')
     remarks = models.TextField(max_length=200,null=True,blank=True,verbose_name=u'备注信息')
+    class Meta:
+        verbose_name='servers'
     def natural_key(self):
         return self.assert_number
     '''
@@ -141,11 +157,13 @@ def validate_even(value):
     for email in value:
         validate_email(email)
 @reversion.register()
-class Emailcheck(models.Model):
-    email=models.EmailField(unique=True,verbose_name='邮箱地址')
+class EmailcheckModel(models.Model):
+    email=models.EmailField(unique=True,verbose_name='邮箱地址',blank=True,null=True)
     name=models.CharField(max_length=100,blank=True,null=True,verbose_name=u'姓名')
     lastcgdate=models.DateField(blank=True,null=True,verbose_name=u'密码更新日期')
     remarks=models.TextField(max_length=200,null=True,blank=True,verbose_name=u'备注')
+    class Meta:
+        verbose_name='emailcheck'
     def __str__(self):
         return self.email
     def natural_key(self):
@@ -159,27 +177,29 @@ class Emailcheck(models.Model):
                 pass
         else:
             pass
-        super(Emailcheck,self).save()
+        super(EmailcheckModel,self).save()
 
 
 @reversion.register()
-class Powercheck(models.Model):
+class PowercheckModel(models.Model):
     CHECKSTATUS = (
         ("Enable", 'Enable'),
         ("Disable", 'Disable'),
     )
-    ipaddress=models.GenericIPAddressField(unique=True,verbose_name=u'IP地址')
+    ipaddress=models.GenericIPAddressField(unique=True,verbose_name=u'IP地址',blank=True,null=True)
     email=models.EmailField(verbose_name=u'所有者邮箱地址',blank=True,null=True)
     name=models.CharField(max_length=100,blank=True,null=True,verbose_name=u'所有者')
     status=models.CharField(max_length=10,verbose_name=u'状态',choices=CHECKSTATUS,default='enable')
     remarks=models.TextField(max_length=200,null=True,blank=True,verbose_name=u'备注')
+    class Meta:
+        verbose_name='powercheck'
     def __str__(self):
         return self.ipaddress
     def natural_key(self):
         return self.ipaddress
 
     def save(self, force_insert=False, force_update=False, using=None,update_fields=None):
-
+        print('save')
         if not self.name:
             try:
                 self.name=Staff.objects.get(ipaddress__exact=self.ipaddress).name
@@ -194,5 +214,5 @@ class Powercheck(models.Model):
                 pass
         else:
             pass
-        super(Powercheck,self).save()
+        super(PowercheckModel,self).save()
 
