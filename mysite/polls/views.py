@@ -35,13 +35,6 @@ class MModelView(TemplateView,FormMixin):
     model = None
     template_name = 'manufacturers.html'
     form_class = None
-    # def get_form_class(self):
-    #     if (not self.form_class):
-    #         form_name = '{0}Form'.format(self.model.__name__)
-    #         mod = __import__(self.model._meta.app_label, fromlist=('forms'))
-    #         class_form = getattr(mod.forms, form_name, None)
-    #         return class_form
-    #     return  self.form_class
 
     def get_context_data(self, **kwargs):
         context=super(MModelView,self).get_context_data(**kwargs)
@@ -53,16 +46,10 @@ class MModelView(TemplateView,FormMixin):
             'deleteurl': reverse('delete{0}'.format(mname)),
             'historyurl': reverse('history{0}'.format(mname)),
             'objlist': reverse('{0}list'.format(mname))
-            # 'editurl': reverse('update{0}'.format(self.model.__name__.lower())),
-            # 'deleteurl': reverse('delete{0}'.format(self.model.__name__.lower())),
-            # 'historyurl': reverse('history{0}'.format(self.model.__name__.lower())),
-            # 'objlist':reverse('{0}list'.format(self.model.__name__.lower()))
         }
         context['form']=self.get_form()
-        #print(self.get_form().as_p())
-        #print(help(self.get_form_class()))
-        #print(self.get_form(form_class=self.get_form_class()))
-        #add.delay(2,3)
+        r=add.delay(2,3)
+        print('result:{0}'.format(r.get(timeout=100)))
         return context
 
 

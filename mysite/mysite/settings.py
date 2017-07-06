@@ -30,8 +30,8 @@ ALLOWED_HOSTS = ['192.168.164.15','192.168.164.129']
 
 
 
-BROKER_URL = 'redis://172.31.50.132:6379/0'
-CELERY_RESULT_BACKEND = 'redis://172.31.50.132:6379/0'
+BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 # Application definition
 
 #from django.db import models
