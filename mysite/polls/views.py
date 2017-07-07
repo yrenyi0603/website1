@@ -49,7 +49,8 @@ class MModelView(TemplateView,FormMixin):
         }
         context['form']=self.get_form()
         r=add.delay(2,3)
-        print('result:{0}'.format(r.get(timeout=100)))
+        # r2=
+        # print('result:{0}'.format(r2.get(timeout=100)))
         return context
 
 
