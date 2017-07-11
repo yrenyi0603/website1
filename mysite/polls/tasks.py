@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from celery import task
-
-
+from celery.utils.log import get_task_logger
+logger=get_task_logger(__name__)
 @task
 def add(x, y):
     return x + y
@@ -20,6 +20,19 @@ from django.core.mail import EmailMessage
 from django.core import mail
 from django.core.mail.backends.smtp import EmailBackend
 
+import subprocess
+def masscan_check(hosts):
+    ips = " ".join(hosts)
+    # command="/home/yrenyi/PycharmProjects/website1/mysite/tools/masscan --rate 1000000 -p1-65535  {0}".format(ips)
+    # sudopass=open('/home/yrenyi/PycharmProjects/website1/mysite/tools/sudopass')
+    # echo = subprocess.Popen(['echo', '\'abc123!@#\''],stdout=subprocess.PIPE)
+    child1 = subprocess.Popen("sudo /home/yrenyi/PycharmProjects/website1/mysite/tools/masscan --rate 100000 -p1-65535  {0} | grep \"open\" \|awk \'{{print $6}}\'".format(ips),
+                              shell=True, stdout=subprocess.PIPE)
+    child1.wait()
+    out = child1.communicate()
+    logger.info('result is {0}'.format(out[0]))
+    # from nmap import   nmap
+    return list(set(hosts) - set(out[0].split()))
 
 def sendemail2(subject,message,from_email="",recipient_list="",cc_email=""):
     # backend = EmailBackend(host='mail.ims.cn', port=25, username='dop1@ims.cn', password='abc123!@#')
@@ -43,11 +56,12 @@ def sendemail2(subject,message,from_email="",recipient_list="",cc_email=""):
         ).send()
 from .models import EmailcheckModel,PowercheckModel
 import json
-@task
-def sendEmailList():
+@task(bind=True,autoretry_for=(Exception,), max_retries=5,default_retry_delay=60*1,ignore_result=True)
+def sendEmailList(self):
     emails=[i.email for i in EmailcheckModel.objects.all()]
     sendemail2(subject='email list',message=json.dumps(emails))
 @task
-def sendIpAddress():
+def sendIpAddress(ignore_result=True):
     ip=[i.ipaddress for i in PowercheckModel.objects.filter(status__exact='Enable')]
-    sendemail2(subject='ip list', message=json.dumps(ip))
+    # masscan_check(ip)
+    sendemail2(subject='ip list', message=json.dumps(masscan_check(ip)))

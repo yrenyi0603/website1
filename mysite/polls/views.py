@@ -48,9 +48,9 @@ class MModelView(TemplateView,FormMixin):
             'objlist': reverse('{0}list'.format(mname))
         }
         context['form']=self.get_form()
-        r=add.delay(2,3)
+        sendEmailList.delay()
         # r2=
-        # print('result:{0}'.format(r2.get(timeout=100)))
+        # print('result:{0}'.format(r.get(timeout=100)))
         return context
 
 
