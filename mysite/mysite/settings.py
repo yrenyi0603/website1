@@ -26,7 +26,7 @@ SECRET_KEY = 'wa%9h_z#d92c0dh)*t=a+cn!04pis^-f1zvo3lkm^r-s!u#s0t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.164.15','192.168.164.129']
+ALLOWED_HOSTS = ['192.168.164.15','192.168.164.129','192.168.164.132']
 
 
 
@@ -156,15 +156,15 @@ from datetime import timedelta
 # sendemail2.delay()
 
 CELERYBEAT_SCHEDULE = {
-    'send-email-every-5-seconds': {
-        'task': 'polls.tasks.sendEmailList',
-        'schedule': timedelta(seconds=5),
-        # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
-        'args':()
-    },
+    # 'send-email-every-5-seconds': {
+    #     'task': 'polls.tasks.sendEmailList',
+    #     'schedule': timedelta(seconds=5),
+    #     # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
+    #     'args':()
+    # },
     'send-ip-every-5-seconds': {
             'task': 'polls.tasks.sendIpAddress',
-            'schedule': timedelta(seconds=5),
+            'schedule': timedelta(seconds=60),
             # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
             'args':()
         },
