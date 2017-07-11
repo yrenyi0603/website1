@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>邮箱密码到期提醒</title>
+    <style>
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+#nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:100px;
+    float:left;
+    padding:5px;
+}
+#section {
+    width:350px;
+    height:500px;
+    float:left;
+    padding:10px;
+}
+#footer {
+    background-color:white;
+    color:black;
+    clear:both;
+    text-align:left;
+   padding:5px;
+}
+</style>
+</head>
+</head>
+<body>
+<div style="height:400px;">
+<h1>邮箱密码到期提醒</h1>
+        <p>您好：
+    <blockquote>您的邮箱账户：{{ email }} 密码将于{{ day }}天后到期，请您及时修改密码。</blockquote></p>
+</div>
+<br>
+<br>
+<br>
+<div id="footer">
+    安全运维部
+</div>
+</body>
+</html>
