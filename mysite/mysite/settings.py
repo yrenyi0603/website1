@@ -162,10 +162,10 @@ CELERYBEAT_SCHEDULE = {
     #     # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
     #     'args':()
     # },
-    'send-ip-every-5-seconds': {
-            'task': 'polls.tasks.sendIpAddress',
-            'schedule': timedelta(seconds=60),
-            # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
-            'args':()
-        },
+    # 'send-ip-every-5-seconds': {
+    #         'task': 'polls.tasks.sendIpAddress',
+    #         'schedule': timedelta(seconds=60),
+    #         # 'args': ('你好','你好','dop1@ims.cn',['dop6@ims.cn'],['dop6@ims.cn'])
+    #         'args':()
+    #     },
 }
