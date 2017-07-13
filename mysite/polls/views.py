@@ -17,7 +17,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.contrib.auth.decorators import login_required
 '''
 from django.core.files.uploadedfile import  InMemoryUploadedFile
-from django.http import HttpResponse
+# from django.http import HttpResponse
 SUCCESS=0
 FAIED=1
 histag={
@@ -384,6 +384,7 @@ class FieldTreeView(View):
 #     template_name = 'tree.html'
 
 
+from io import  StringIO
 
 class excelView(View):
     model=None
@@ -396,10 +397,22 @@ class excelView(View):
         # r = [dict(i['fields']) for i in json.loads(rjson)]
         import xlwt
         from datetime import datetime
-        style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on',
-                             num_format_str='#,##0.00')
-        style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
+        # style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on',
+        #                      num_format_str='#,##0.00')
+        # style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
         style2 = xlwt.easyxf('font: color-index red, bold on,height 200')
+        pattern=xlwt.Pattern()
+        pattern.pattern=xlwt.Pattern.SOLID_PATTERN
+        pattern.pattern_fore_colour = 5
+        style3=xlwt.XFStyle()
+        font=xlwt.Font()
+        font.colour_index = 4
+        font.bold = True
+        font.shadow = True
+        style3.font=font
+
+
+
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Sheet1')
 
@@ -414,14 +427,26 @@ class excelView(View):
             ws.col(i).width= 5000
         for i,j in enumerate(valeus):
             for m,n in enumerate(j):
-                ws.write(i+1,m,n)
-        wb.save('tools/b.xls')
+                if i %2 == 0 :
+                    style3.pattern = pattern
+                else:
+                    style3.pattern = xlwt.Pattern()
+                ws.write(i+1,m,n,style3)
 
-        return HttpResponse('status:1')
+        # f=StringIO()
+        # wb.save(f)
+        response=HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="somefilename.xls"'
+        wb.save(response)
+        return response
+        # return HttpResponse('status:1')
 
     def get_queryset(self):
         return  self.model._default_manager.all()
     def post(self,request):
-        pass
+        from io import  StringIO
+        f=StringIO()
+
+
 
 
