@@ -416,7 +416,7 @@ class excelView(View):
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Sheet1')
 
-        title=[i.verbose_name for i in self.model._meta.fields]
+        title=[i.verbose_name for i in self.model._meta.get_fields() if i.concrete]
         valeus=[i.values() for i in r]
         ws.panes_frozen = True
         ws.horz_split_pos = 1
