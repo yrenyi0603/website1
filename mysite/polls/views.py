@@ -48,7 +48,7 @@ class MModelView(TemplateView,FormMixin):
             'objlist': reverse('{0}list'.format(mname))
         }
         context['form']=self.get_form()
-        sendEmailList.delay()
+        # sendEmailList.delay()
         # r2=
         # print('result:{0}'.format(r.get(timeout=100)))
         return context
@@ -333,12 +333,12 @@ class MainView(viewsets.ViewSet):
             return '{}'
         df['status']=df['status'].fillna('other')
         return df.groupby('status').size().to_json()
-
+from .serializer.modelserializer import *
 class FieldTreeView(View):
     model=None
     field=None
     def gettree(self,field):
-        from .serializer.modelserializer import StaffSerializer
+
         serializer = StaffSerializer(self.get_queryset(), many=True)
         df=pd.DataFrame(data=serializer.data)
         tree = {}
@@ -383,5 +383,45 @@ class FieldTreeView(View):
 # class EmailTreeView(TemplateView):
 #     template_name = 'tree.html'
 
+
+
+class excelView(View):
+    model=None
+    def get(self,request):
+        # serializer = StaffSerializer(self.get_queryset(), many=True)
+        # df = pd.DataFrame(data=serializer.data)
+        rjson = serialize('json', self.get_queryset(), use_natural_foreign_keys=True)
+        print(rjson)
+        r = [dict( **{'id': i['pk']},**i['fields']) for i in json.loads(rjson)]
+        # r = [dict(i['fields']) for i in json.loads(rjson)]
+        import xlwt
+        from datetime import datetime
+        style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on',
+                             num_format_str='#,##0.00')
+        style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
+        style2 = xlwt.easyxf('font: color-index red, bold on,height 200')
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet('Sheet1')
+
+        title=[i.verbose_name for i in self.model._meta.fields]
+        valeus=[i.values() for i in r]
+        ws.panes_frozen = True
+        ws.horz_split_pos = 1
+        ws.horzi_split_fiHst_visibl = 3
+
+        for i,j in enumerate(title):
+            ws.write(0,i,j,style2)
+            ws.col(i).width= 5000
+        for i,j in enumerate(valeus):
+            for m,n in enumerate(j):
+                ws.write(i+1,m,n)
+        wb.save('tools/b.xls')
+
+        return HttpResponse('status:1')
+
+    def get_queryset(self):
+        return  self.model._default_manager.all()
+    def post(self,request):
+        pass
 
 

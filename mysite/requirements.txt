@@ -5,6 +5,8 @@ mysqlclient
 django-reversion
 python_dateutil == 2.6.0
 pandas
+openpyxl
+xlwt
 django-pandas == 0.4.3
 django-simple-serializer
 djangorestframework
