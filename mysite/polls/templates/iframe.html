@@ -16,6 +16,8 @@
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newobj()">New</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editobj()">Edit</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyobj()">Remove</a>
+			{% block extendtool %}
+			{% endblock%}
 
 		</div>
 		<div style="margin:20px 0;"></div>
@@ -41,56 +43,30 @@
 		<div>
 			{{ form.mtype.value }}
 		</div>
-		{% if form.mtype.value == 'server' %}
-		<table id="tb">
-			<tr>
-				<td>
-					<span>{{ form.ipaddress.label }}:</span>
-					<input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
-				</td>
-				<td>
-					<span>{{ form.status.label }}:</span>
-					{{ form.status   }}
-				</td>
-				<td>
-					<span>{{ form.zone.label }}:</span>
-					{{ form.zone   }}
-				</td>
-				<td>
-					<span>{{ form.assert_number.label }}:</span>
-					<input class="easyui-textbox" id="{{ form.assert_number.id_for_label }}">
-				</td>
-				<td>
-					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
-					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
-				</td>
-			</tr>
-		</table>
-		{% endif %}
-		{% if form.mtype.value == 'staff' %}
-		<table id="tb">
-			<tr>
-				<td>
-					<span>{{ form.name.label }}:</span>
-					<input class="easyui-textbox" id="{{ form.name.id_for_label }}">
-				</td>
-				<td>
-					<span>{{ form.department.label }}:</span>
-					{{ form.department   }}
-				</td>
-				<td>
-					<span>{{ form.ipaddress.label }}:</span>
-					<input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
-				</td>
-				<td>
-					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
-					<a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
-				</td>
-			</tr>
-		</table>
-		{% endif %}
+		{% block search %}
+		{% endblock %}
 {% block getlist %}
 {% endblock %}
 {% include 'script/operition.html' %}
+<script type="text/javascript">
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+    }
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+</script>
 </body>
 </html>

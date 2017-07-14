@@ -9,12 +9,14 @@ staff_info={
     'model':Staff,
     'form_class':StaffForm,
     'listview':views.StaffLIstView,
+    'export':True
     #'editview':views.StaffEditView,
 }
 server_info={
     'model':Servers,
     'form_class':ServersForm,
-    'listview':views.ServersListView
+    'listview':views.ServersListView,
+    'export':True,
 }
 zone_info={
     'model':Zone,
@@ -62,18 +64,14 @@ for info in models_info:
     model=info['model']
     modelname = model._meta.verbose_name
     formclass=info['form_class']
-    model_listview=info.get('listview',None)
-    if not model_listview :
-        model_listview=views.MListView
 
-    editview=info.get('editview',None)
-    if not editview:
-        editview= views.MEditView
+    model_listview=info.get('listview',None) or views.MListView
+    editview=info.get('editview',None) or views.MEditView
+    addview=info.get('addview',None) or views.MAddView
 
-    addview=info.get('addview',None)
-    if not addview:
-        addview= views.MAddView
 
+    if info.get('export',False):
+        urls.append(url('{0}/excel/$'.format(modelname),login_required(views.excelView.as_view(model=model)),name='excel_{0}'.format(modelname)))
     urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model,form_class=formclass)),name=modelname))
     urls.append(url('{0}/list/$'.format(modelname),login_required(model_listview.as_view(model=model)),name='{0}list'.format(modelname)))
     urls.append(url('{0}/add/$'.format(modelname), login_required(addview.as_view(model=model,form_class=formclass)),name='add{0}'.format(modelname)))
@@ -86,15 +84,6 @@ urlpatterns = [
     url(r'^main/$',login_required(views.MainView.as_view({'get':'list'})),name='main' ),
     url(r'^emailtree/$',login_required(views.FieldTreeView.as_view(field='email',model=EmailcheckModel)),name='emailtree' ),
     url(r'^ipaddresstree/$',login_required(views.FieldTreeView.as_view(field='ipaddress',model=PowercheckModel)),name='iptree' ),
-    url(r'^excel/$',login_required(views.excelView.as_view(model=Staff)),name='excel')
-    # url(r'^emailtree/$',login_required(views.EmailTreeView.as_view()),name='emailtreet' ),
-    #url(r'^staff/',include(staff_url)),
-    #url(r'^department/',include(department_url)),
-    #url(r'^status/',include(status_url)),
-    #url(r'^zone/',include(zone_url)),
-    #url(r'^os/',include(os_url)),
-    #url(r'^manufacturer/',include(manufacturer_url)),
-    #url(r'^server/',include(server_url)),
 ]
 urlpatterns.extend(urls)
 print(urlpatterns)

@@ -31,10 +31,11 @@ class HomeView(View):
     def get(self,request):
         return render(request,'base.html')
 from .tasks import *
+from django.core.exceptions import ImproperlyConfigured
 class MModelView(ListView,FormMixin):
     model = None
     # template_name = 'manufacturers.html'
-    # form_class = None
+    form_class = None
 
     def get_context_data(self, **kwargs):
         context=super(MModelView,self).get_context_data(**kwargs)
@@ -49,9 +50,16 @@ class MModelView(ListView,FormMixin):
         }
         context['form']=self.get_form()
         # sendEmailList.delay()
-        # r2=
         # print('result:{0}'.format(r.get(timeout=100)))
         return context
+    def get_template_names(self):
+        try:
+            names = super(MModelView, self).get_template_names()
+        except ImproperlyConfigured:
+            names = []
+        opts = self.model._meta
+        names.append("%s/list/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
+        return names
 
 
 class MEditView(ManyToManyMixin,RevisionMixin,UpdateView):
@@ -183,7 +191,7 @@ class MListView(ListView):
         objects = self.get_queryset()
         result = self.get_paginator(objects, per_page=rows)
 
-        a=result.page(page).object_list
+        # a=result.page(page).object_list
         #print(help(a))
         #b=serialize('json',result.page(page),use_natural_foreign_keys=True, use_natural_primary_keys=True)
         rjson = serialize('json', result.page(page), use_natural_foreign_keys=True)
@@ -193,25 +201,28 @@ class MListView(ListView):
 
     def post(self,request):
         total, rlist = self.get_objlist(request)
-        r=[dict(i['fields'],**{'pk':i['pk']}) for i  in json.loads(rlist)]
+        r=[dict(**{'pk':i['pk']},**i['fields']) for i  in json.loads(rlist)]
         #print(r)
         return JsonResponse(data={"total": total, "rows": r})
 
 class ServersListView(MListView):
     def get_queryset(self):
         try:
+            queryset = self.model._default_manager.all()
+
             status=self.request.POST['status']
             zone=self.request.POST['zone']
-            queryset = self.model._default_manager.all()
-            if status:
-                queryset =queryset.filter(status=status)
-            if zone:
-                queryset=queryset.filter(zone=zone)
             ipaddress=self.request.POST['ipaddress'].strip()
             assert_number=self.request.POST['assert_number'].strip()
-            return queryset.filter(ipaddress__contains=ipaddress,assert_number__contains=assert_number)
-        except:
-            return super(MListView,self).get_queryset()
+
+            queryset = queryset.filter(status=status) if status else queryset
+            queryset = queryset.filter(zone=zone) if zone else queryset
+            queryset =  queryset.filter(ipaddress__contains=ipaddress) if ipaddress else queryset
+            queryset = queryset.filter(assert_number__contains=assert_number) if assert_number else queryset
+            return  queryset
+            # return queryset.filter(ipaddress__contains=ipaddress,assert_number__contains=assert_number)
+        except Exception as e:
+            return super(ServersListView,self).get_queryset()
 class StaffLIstView(MListView):
     def get_queryset(self):
         try:
@@ -219,9 +230,12 @@ class StaffLIstView(MListView):
             ipaddress = self.request.POST['ipaddress'].strip()
             queryset = self.model._default_manager.all()
             department=self.request.POST['department']
-            if department:
-                queryset = queryset.filter(department=department)
-            return queryset.filter(name__contains=name,ipaddress__contains=ipaddress)
+
+            queryset = queryset.filter(department=department) if department else queryset
+            queryset = queryset.filter(name__contains=name) if name else  queryset
+            queryset = queryset.filter(ipaddress__contains=ipaddress) if ipaddress else queryset
+            return queryset
+            # return queryset.filter(name__contains=name,ipaddress__contains=ipaddress)
         except:
             return super(StaffLIstView,self).get_queryset()
 
@@ -410,9 +424,6 @@ class excelView(View):
         font.bold = True
         font.shadow = True
         style3.font=font
-
-
-
         wb = xlwt.Workbook()
         ws = wb.add_sheet('Sheet1')
 
@@ -443,9 +454,9 @@ class excelView(View):
 
     def get_queryset(self):
         return  self.model._default_manager.all()
-    def post(self,request):
-        from io import  StringIO
-        f=StringIO()
+    # def post(self,request):
+    #     from io import  StringIO
+    #     f=StringIO()
 
 
 

@@ -52,7 +52,7 @@ class MModelForm(ModelForm):
             self.fields[key].widget.attrs.update({'style':','.join((self.fields[key].widget.attrs.get('style',''), 'width:100%;')).strip(',')})
 
 class StaffForm(MModelForm):
-    mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='staff')
+    # mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='staff')
     class Meta:
         model = Staff
         fields=['name','tel','email','ipaddress','department','entrydata','computers']
@@ -102,7 +102,7 @@ class MIPFormFied(forms.GenericIPAddressField):
         return {'class':'easyui-textbox','style':"width:60%"}
 
 class ServersForm(MModelForm):
-    mtype=forms.CharField(disabled=True,widget=forms.HiddenInput,initial='server')
+    # mtype=forms.CharField(disabled=True,widget=forms.HiddenInput,initial='server')
     class Meta:
         model = Servers
         fields = '__all__'
@@ -125,7 +125,7 @@ class ServersForm(MModelForm):
         '''
 
 class ComputerForm(MModelForm):
-    mtype=forms.CharField(disabled=True,widget=forms.HiddenInput,initial='computer')
+    # mtype=forms.CharField(disabled=True,widget=forms.HiddenInput,initial='computer')
     class Meta:
         model = Computer
         fields = '__all__'
@@ -150,7 +150,7 @@ class MultiIpaddressField(forms.Field):
             validate_ipv4_address(ip)
 
 class PowercheckForm(MModelForm):
-    mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='powercheck')
+    # mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='powercheck')
     staffipadderss = MultiIpaddressField(label=u'员工IP地址', required=False, widget=forms.HiddenInput)
     class Meta:
         model = PowercheckModel
@@ -187,7 +187,7 @@ class MultiEmailField(forms.Field):
         for email in value:
             validate_email(email)
 class EmailCheckModelForm(MModelForm):
-    mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='mailcheck')
+    # mtype = forms.CharField(disabled=True, widget=forms.HiddenInput, initial='mailcheck')
     staffemails=MultiEmailField(label=u'员工邮箱',required=False,widget=forms.HiddenInput)
     class Meta:
         model = EmailcheckModel
