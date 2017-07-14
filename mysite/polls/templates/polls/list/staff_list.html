@@ -1,0 +1,29 @@
+{% extends 'polls/base_list.html' %}
+{% block search %}
+
+<table id="tb">
+    <tr>
+        <td>
+            <span>{{ form.name.label }}:</span>
+            <input class="easyui-textbox" id="{{ form.name.id_for_label }}">
+        </td>
+        <td>
+            <span>{{ form.department.label }}:</span>
+            {{ form.department   }}
+        </td>
+        <td>
+            <span>{{ form.ipaddress.label }}:</span>
+            <input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
+        </td>
+        <td>
+            <a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
+            <a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
+        </td>
+    </tr>
+</table>
+
+{% endblock %}
+
+{% block extendtool %}
+<a href="{% url 'excel_staff' %}" class="easyui-linkbutton" iconCls="icon-save" plain="true">Save</a>
+{% endblock%}

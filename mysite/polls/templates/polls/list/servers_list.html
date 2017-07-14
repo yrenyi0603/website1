@@ -1,0 +1,41 @@
+{% extends 'polls/base_list.html' %}
+{% block columnsstyle %}
+    {% if field.html_name  == "status"  %}
+        ,styler: function(value,row,index)
+        {
+            if (value ==  '异常' )
+            {
+                return 'background-color:#ffee00;color:red;';
+            }
+        }
+    {% endif %}
+{% endblock %}
+{% block search %}
+    <table id="tb">
+        <tr>
+            <td>
+                <span>{{ form.ipaddress.label }}:</span>
+                <input class="easyui-textbox" id="{{ form.ipaddress.id_for_label }}">
+            </td>
+            <td>
+                <span>{{ form.status.label }}:</span>
+                {{ form.status   }}
+            </td>
+            <td>
+                <span>{{ form.zone.label }}:</span>
+                {{ form.zone   }}
+            </td>
+            <td>
+                <span>{{ form.assert_number.label }}:</span>
+                <input class="easyui-textbox" id="{{ form.assert_number.id_for_label }}">
+            </td>
+            <td>
+                <a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-search'" style="width:80px"  onclick="doSearch()">Search</a>
+                <a href="#" class="easyui-linkbutton " data-options="iconCls:'icon-reload'" style="width:80px"  onclick="clearSearch()">Clear</a>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+{% block extendtool %}
+<a href="{% url 'excel_servers' %}" class="easyui-linkbutton" iconCls="icon-save" plain="true">Save</a>
+{% endblock%}
