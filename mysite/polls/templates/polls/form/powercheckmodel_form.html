@@ -7,16 +7,13 @@
     </tr>
     <tr>
         <td colspan=2 style="width:100%;float:left" >
-            <textarea  id="{{ form.staffemails.id_for_label }}" class="easyui-textbox" multiline="true" name="{{ form.staffemails.html_name }}"  value="" style="width:100%;height:80px;"></textarea>
+            <textarea id="{{ form.staffipadderss.id_for_label }}" class="easyui-textbox" multiline="true" name="{{ form.staffipadderss.html_name }}" value="" style="width:100%;height:80px;"></textarea>
         </td>
     </tr>
 {% endblock %}
-
 {% block treeurl %}
-    url:'{% url 'emailtree' %}',
+    url:'{% url 'iptree' %}',
 {% endblock %}
-
 {% block textboxvalue %}
-    $("textarea#{{ form.staffemails.id_for_label }}").textbox('setValue',s);
+    $("textarea#{{ form.staffipadderss.id_for_label }}").textbox('setValue',s);
 {% endblock %}
-

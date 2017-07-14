@@ -51,13 +51,16 @@ emailcheck_info={
     'model':EmailcheckModel,
     'addview':views.EmailcheckaddView,
     'form_class':EmailCheckModelForm,
-    'edit_form_template':True,
+    'edit_form_template':False,
+    'add_form_template':True,
 }
 
 powercheck_info={
     'model':PowercheckModel,
     'addview':views.PowercheckaddView,
     'form_class':PowercheckForm,
+    'edit_form_template':False,
+    'add_form_template':True,
     # 'edit_form':'polls/form/',
 }
 
@@ -85,7 +88,8 @@ for info in models_info:
     urls.append(url('{0}/list/$'.format(modelname),login_required(model_listview.as_view(model=model)),name='{0}list'.format(modelname)))
 
     if  info.get('add_form_template',False):
-        pass
+        urls.append(url('{0}/add/$'.format(modelname), login_required(
+            addview.as_view(model=model, form_class=formclass)),name='add{0}'.format(modelname)))
     else:
         urls.append(url('{0}/add/$'.format(modelname), login_required(addview.as_view(model=model,form_class=formclass,template_name='polls/base_form.html')),name='add{0}'.format(modelname)))
     if not info.get('edit_form_template',False):

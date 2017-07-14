@@ -121,6 +121,15 @@ class MAddView(ManyToManyMixin,CreateView):
         print(form.cleaned_data)
         print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
+    def get_template_names(self):
+        names=super(MAddView,self).get_template_names()
+        names.append("%s/form/%s%s.html" % (
+                    self.model._meta.app_label,
+                    self.model._meta.model_name,
+                    self.template_name_suffix
+                ))
+        print(names)
+        return names
     # def get(self, request, *args, **kwargs):
     #
     #     return render(request,template_name='base_form.html',context={'form':self.form_class})

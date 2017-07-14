@@ -1,0 +1,61 @@
+{% extends 'polls/base_form.html' %}
+{%  block custom_field %}
+{% endblock %}
+{% block diag %}
+    <div id="chosestaffs" class="easyui-dialog" style="height:400px;width:100%;max-width:400px;padding:10px 40px 20px 40px;"
+            closed="true" buttons="#chosestaff-buttons">
+        <div class="easyui-panel" style="padding:5px;width:100%;max-width:300px">
+            <ul id="ttcheck" class="easyui-tree" data-options="
+                {% block treeurl %}
+                {% endblock %}
+                method:'get',
+                animate:true,
+                checkbox:true,
+                onlyLeafCheck:true,
+                formatter:function(node){
+                                var s = node.text;
+                                if (node.children){
+                                    s += '&nbsp;<span style=\'color:blue\'>(' + node.children.length + ')</span>';
+                                }
+                                return s;
+                            }
+                ">
+            </ul>
+        </div>
+    </div>
+    <div id="chosestaff-buttons">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addchose()">Chose</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#chosestaffs').dialog('close')">Cancel</a>
+    </div>
+{% endblock %}
+{% block formscript %}
+    <script Language=JavaScript>
+        function chosestaff(){
+            $('#chosestaffs').dialog({
+                title:'员工tree',
+                width:500,
+                heigth:200,
+                closed:false,
+                cache:false,
+                modal:true,
+                onBeforeOpen:function(){
+                    $("#ttcheck").tree('reload');
+                },
+            });
+        };
+        function addchose(){
+            var nodes = $('#ttcheck').tree('getChecked');
+            var s = '';
+            for(var i=0; i<nodes.length; i++){
+                if (s != '') s += ',';
+                s += nodes[i].text;
+            }
+            if(s!='wosign'){
+                {% block textboxvalue %}
+                {% endblock %}
+            }
+            $('#chosestaffs').dialog('close');
+        };
+    </script>
+{% endblock %}
+
