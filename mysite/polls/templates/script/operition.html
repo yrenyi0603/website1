@@ -84,27 +84,8 @@ function saveobj(){
 		}
 	});
 };
-{% if form.mtype.value == 'server' %}
-function doSearch(){
-    $('#dg').datagrid('load',{
-        status:$('#{{ form.status.id_for_label }}').val(),
-        ipaddress:$('#{{ form.ipaddress.id_for_label }}').val(),
-        assert_number:$('#{{ form.assert_number.id_for_label }}').val(),
-        zone:$('#{{ form.zone.id_for_label }}').val(),
-        csrfmiddlewaretoken:'{{ csrf_token }}',
-    });
-};
-{% endif %}
-{% if form.mtype.value == 'staff' %}
-function doSearch(){
-    $('#dg').datagrid('load',{
-        name:$('#{{ form.name.id_for_label }}').val(),
-        ipaddress:$('#{{ form.ipaddress.id_for_label }}').val(),
-        department:$('#{{ form.department.id_for_label }}').val(),
-        csrfmiddlewaretoken:'{{ csrf_token }}',
-    });
-};
-{% endif %}
+{% block searchscript %}
+{% endblock %}
 function clearSearch(){
 	$('#tb').form('clear');
 };
