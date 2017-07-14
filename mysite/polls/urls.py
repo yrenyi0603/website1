@@ -46,6 +46,8 @@ computer_info={
     'model':Computer,
     'form_class':ComputerForm,
     #'editview':views.ComputerEditView,
+    'list_template':True,
+    'export':True,
 }
 emailcheck_info={
     'model':EmailcheckModel,
@@ -75,7 +77,6 @@ for info in models_info:
     model_listview=info.get('listview',None) or views.MListView
     editview=info.get('editview',None) or views.MEditView
     addview=info.get('addview',None) or views.MAddView
-
 
     if info.get('export',False):
         urls.append(url('{0}/excel/$'.format(modelname),login_required(views.excelView.as_view(model=model)),name='excel_{0}'.format(modelname)))

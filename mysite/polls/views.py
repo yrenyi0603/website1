@@ -448,7 +448,8 @@ class excelView(View):
         ws = wb.add_sheet('Sheet1')
 
         title=[i.verbose_name for i in self.model._meta.get_fields() if i.concrete]
-        valeus=[i.values() for i in r]
+        values=[i.values() for i in r]
+        print(values)
         ws.panes_frozen = True
         ws.horz_split_pos = 1
         ws.horzi_split_fiHst_visibl = 3
@@ -456,7 +457,7 @@ class excelView(View):
         for i,j in enumerate(title):
             ws.write(0,i,j,style2)
             ws.col(i).width= 5000
-        for i,j in enumerate(valeus):
+        for i,j in enumerate(values):
             for m,n in enumerate(j):
                 if i %2 == 0 :
                     style3.pattern = pattern
