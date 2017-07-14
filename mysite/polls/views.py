@@ -31,9 +31,9 @@ class HomeView(View):
     def get(self,request):
         return render(request,'base.html')
 from .tasks import *
-class MModelView(TemplateView,FormMixin):
+class MModelView(ListView,FormMixin):
     model = None
-    template_name = 'manufacturers.html'
+    # template_name = 'manufacturers.html'
     form_class = None
 
     def get_context_data(self, **kwargs):

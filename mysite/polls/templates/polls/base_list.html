@@ -1,0 +1,74 @@
+{% extends 'iframe.html' %}
+{% block getlist %}
+<script Language=JavaScript>
+	$('#dg').datagrid({
+    url:'{{ url.objlist }}',
+    columns:[[
+        {%  for field in form.visible_fields %}
+            {field:'{{ field.html_name  }}',title:'{{ field.label  }}',width:100
+                {% block fieldcontent %}
+                {% endblock %}
+            },
+        {% endfor %}
+    ]],
+    queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+    rownumbers:true,
+    nowrap: false,
+    idField:'pk',
+    pagination:true,
+    pageSize:10,
+    pageList:[10,20,50],
+    striped : true,
+    singleSelect:true,
+    fitColumns:true,
+    loadMsg:'正在请求数据',
+    toolbar:'#tb',
+	onDblClickRow:function (rowIndex, rowData) {
+	    var selectedRow = $(this).datagrid('getSelected');
+	    $('#hisdg').datagrid({
+            url:'{{ url.historyurl }}',
+            columns:[[
+                {field:'time',title:'修改时间',width:60,
+                },
+                {field:'context',title:'修改内容',width:200},
+            ]],
+            queryParams:{csrfmiddlewaretoken:'{{ csrf_token }}',pk:rowData.pk},
+            rownumbers:true,
+            nowrap: false,
+            idField:'pk',
+            pagination:true,
+            pageSize:5,
+            fit:true,
+            pageList:[5,10,20,50],
+            striped : true,
+            singleSelect:true,
+            fitColumns:true,
+            loadMsg:'正在请求数据',
+
+        });
+        $('#his').dialog('open');
+	},
+});
+
+</script>
+<script type="text/javascript">
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+    }
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+</script>
+{% endblock %}

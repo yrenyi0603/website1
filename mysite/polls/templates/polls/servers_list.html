@@ -1,0 +1,12 @@
+{% extends 'polls/base_list.html' %}
+{% block fieldcontent %}
+    {% if field.html_name  == "status"  %}
+        ,styler: function(value,row,index)
+        {
+            if (value ==  '异常' )
+            {
+                return 'background-color:#ffee00;color:red;';
+            }
+        }
+    {% endif %}
+{% endblock %}
