@@ -54,3 +54,120 @@
 
 </script>
 {% endblock %}
+
+{% block operation %}
+<script Language=JavaScript>
+    function newobj(){
+        $('#dlg').dialog({
+            title:'Edit',
+            width:500,
+            heigth:200,
+            closed:false,
+            cache:false,
+            href:'{{ url.addurl }}',
+            modal:true
+        });
+        $('#dlg').dialog('open').dialog('setTitle','New Object');
+        url = '{{ url.addurl }}';
+        pk="";
+    };
+    function editobj(){
+        var row = $('#dg').datagrid('getSelected');
+        //alert(JSON.stringify(row))
+        if (row){
+            //alert(row.pk)
+            $('#dlg').dialog({
+                title:'Edit',
+                width:500,
+                heigth:200,
+                closed:false,
+                cache:false,
+                href:'{{ url.editurl }}?pk='+row.pk,
+                modal:true
+            });
+            $('#dlg').dialog('open').dialog('setTitle','Edit Object');
+            //$('#dlg').dialog()
+            //$('#fm').form('load',row);
+            pk=row.pk;
+            url = '{{ url.editurl }}';
+        };
+    };
+    function destroyobj(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row){
+            $.messager.confirm('Confirm','Are you sure you want to destroy this object?',function(r){
+                if (r){
+                    $.post('{{ url.deleteurl }}',{pk:row['pk'],csrfmiddlewaretoken:'{{ csrf_token }}'},function(result){
+                        if(result.status==0){
+                            $.messager.show({
+                                title: 'success',
+                                msg: "删除成功"
+                                });
+                            $('#dg').datagrid('reload');	// reload the user data
+                        } else {
+                            $.messager.show({	// show error message
+                                title: 'Error',
+                                //msg: result.errorMsg
+                                msg: "删除失败"
+                            });
+                        }
+                    },'json');
+                }
+            });
+        }
+    };
+    function saveobj(){
+        $('#fm').form('submit',{
+            url: url,
+            onSubmit: function(param){
+                param.csrfmiddlewaretoken='{{ csrf_token }}';
+                if(pk){param.pk=pk;};
+                return $(this).form('validate');
+            },
+            success: function(result){
+                var result=JSON.parse(result);
+                if(result.status==0){
+                    $('#dlg').dialog('close');
+                    $.messager.show({
+                        title: 'success',
+                        msg: "操作成功"
+                    });
+                    $('#dg').datagrid('reload');
+                }else{
+                    $.messager.show({
+                        title: 'Error',
+                        msg: "操作失败"
+                    });
+                };
+            }
+        });
+    };
+    {% block searchscript %}
+    {% endblock %}
+    function clearSearch(){
+        $('#tb').form('clear');
+    };
+    function clearForm(){
+        $('#fm').form('clear');
+    };
+
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+    }
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+</script>
+{% endblock %}

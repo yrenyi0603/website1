@@ -9,7 +9,8 @@ staff_info={
     'model':Staff,
     'form_class':StaffForm,
     'listview':views.StaffLIstView,
-    'export':True
+    'export':True,
+    'list_template':True,
     #'editview':views.StaffEditView,
 }
 server_info={
@@ -17,6 +18,7 @@ server_info={
     'form_class':ServersForm,
     'listview':views.ServersListView,
     'export':True,
+    'list_template':True,
 }
 zone_info={
     'model':Zone,
@@ -49,12 +51,14 @@ emailcheck_info={
     'model':EmailcheckModel,
     'addview':views.EmailcheckaddView,
     'form_class':EmailCheckModelForm,
+    'edit_form_template':True,
 }
 
 powercheck_info={
     'model':PowercheckModel,
     'addview':views.PowercheckaddView,
     'form_class':PowercheckForm,
+    # 'edit_form':'polls/form/',
 }
 
 urls=[]
@@ -72,10 +76,23 @@ for info in models_info:
 
     if info.get('export',False):
         urls.append(url('{0}/excel/$'.format(modelname),login_required(views.excelView.as_view(model=model)),name='excel_{0}'.format(modelname)))
-    urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model,form_class=formclass)),name=modelname))
+    if info.get('list_template',False):
+        urls.append(url('{0}/all/$'.format(modelname),login_required(views.MModelView.as_view(model=model,form_class=formclass)),name=modelname))
+    else:
+        urls.append(url('{0}/all/$'.format(modelname),
+                        login_required(views.MModelView.as_view(model=model, form_class=formclass,template_name = 'polls/base_list.html')), name=modelname))
+
     urls.append(url('{0}/list/$'.format(modelname),login_required(model_listview.as_view(model=model)),name='{0}list'.format(modelname)))
-    urls.append(url('{0}/add/$'.format(modelname), login_required(addview.as_view(model=model,form_class=formclass)),name='add{0}'.format(modelname)))
-    urls.append(url('{0}/update/$'.format(modelname), login_required(editview.as_view(model=model, form_class=formclass)),name='update{0}'.format(modelname)))
+
+    if  info.get('add_form_template',False):
+        pass
+    else:
+        urls.append(url('{0}/add/$'.format(modelname), login_required(addview.as_view(model=model,form_class=formclass,template_name='polls/base_form.html')),name='add{0}'.format(modelname)))
+    if not info.get('edit_form_template',False):
+        urls.append(url('{0}/update/$'.format(modelname), login_required(editview.as_view(model=model, form_class=formclass,template_name='polls/base_form.html')),name='update{0}'.format(modelname)))
+    else:
+        urls.append(url('{0}/update/$'.format(modelname), login_required(editview.as_view(model=model, form_class=formclass)),name='update{0}'.format(modelname)))
+
     urls.append(url('{0}/delete/$'.format(modelname), login_required(views.MDeleteView.as_view(model=model)),name='delete{0}'.format(modelname)))
     urls.append(url('{0}/history/$'.format(modelname), login_required(views.HisListView.as_view(model=model)),name='history{0}'.format(modelname)))
 

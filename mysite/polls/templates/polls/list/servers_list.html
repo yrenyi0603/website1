@@ -37,5 +37,16 @@
     </table>
 {% endblock %}
 {% block extendtool %}
-<a href="{% url 'excel_servers' %}" class="easyui-linkbutton" iconCls="icon-save" plain="true">Save</a>
+<a href="{% url 'excel_servers' %}" class="easyui-linkbutton" iconCls="icon-save" plain="true">Export</a>
 {% endblock%}
+{% block searchscript %}
+function doSearch(){
+    $('#dg').datagrid('load',{
+        status:$('#{{ form.status.id_for_label }}').val(),
+        ipaddress:$('#{{ form.ipaddress.id_for_label }}').val(),
+        assert_number:$('#{{ form.assert_number.id_for_label }}').val(),
+        zone:$('#{{ form.zone.id_for_label }}').val(),
+        csrfmiddlewaretoken:'{{ csrf_token }}',
+    });
+};
+{% endblock %}

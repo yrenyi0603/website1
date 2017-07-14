@@ -21,7 +21,7 @@ from django.core.files.uploadedfile import  InMemoryUploadedFile
 SUCCESS=0
 FAIED=1
 histag={
-    'edit':'update',
+    'form':'update',
     'add':'add',
     'delete':'delete',
 }
@@ -52,11 +52,9 @@ class MModelView(ListView,FormMixin):
         # sendEmailList.delay()
         # print('result:{0}'.format(r.get(timeout=100)))
         return context
+
     def get_template_names(self):
-        try:
-            names = super(MModelView, self).get_template_names()
-        except ImproperlyConfigured:
-            names = []
+        names = super(MModelView, self).get_template_names()
         opts = self.model._meta
         names.append("%s/list/%s%s.html" % (opts.app_label, opts.model_name, self.template_name_suffix))
         return names
@@ -71,19 +69,29 @@ class MEditView(ManyToManyMixin,RevisionMixin,UpdateView):
         if form.changed_data:
             self.many_many(form=form)
             self.object = form.save()
-            reversion.set_comment(histag.get('edit'))
+            reversion.set_comment(histag.get('form'))
         return JsonResponse(data={'status':SUCCESS})
 
     def form_invalid(self, form):
         return JsonResponse(data={'status': FAIED})
     def get(self, request, *args, **kwargs):
         self.kwargs[self.pk_url_kwarg]=request.GET['pk']
-        form=self.form_class(instance=self.get_object())
-        print(form)
-        return render(request,template_name='editform.html',context={'form':form})
+        return super(MEditView, self).get(request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         self.kwargs[self.pk_url_kwarg] = request.POST['pk']
         return super(MEditView,self).post(request,*args,**kwargs)
+    # def get_context_data(self, **kwargs):
+    #     form=super(MEditView,self).get_context_data(**kwargs)
+    #     form['form'] = self.form_class(instance=self.get_object())
+    #     return form
+    def get_template_names(self):
+        names = super(MEditView, self).get_template_names() or []
+        names.append("%s/form/%s%s.html" % (
+                    self.model._meta.app_label,
+                    self.model._meta.model_name,
+                    self.template_name_suffix
+                ))
+        return names
 
 class StaffEditView(MEditView):
     def form_valid(self, form):
@@ -92,8 +100,6 @@ class StaffEditView(MEditView):
 class ComputerEditView(MEditView):
     def form_valid(self, form):
         return super(ComputerEditView,self).form_valid(form=form)
-
-
 
 class MAddView(ManyToManyMixin,CreateView):
     model = None
@@ -108,15 +114,20 @@ class MAddView(ManyToManyMixin,CreateView):
         '''记录update相关子段的revevision'''
         with reversion.create_revision():
             self.many_many(form=form)
-            reversion.set_comment(histag.get('edit'))
+            reversion.set_comment(histag.get('form'))
         return JsonResponse(data={'status':SUCCESS})
 
     def form_invalid(self, form):
         print(form.cleaned_data)
         print('=========================invalid:{0}'.format(form.errors.as_json()))
         return JsonResponse(data={'status': FAIED})
-    def get(self, request, *args, **kwargs):
-        return render(request,template_name='editform.html',context={'form':self.form_class})
+    # def get(self, request, *args, **kwargs):
+    #
+    #     return render(request,template_name='base_form.html',context={'form':self.form_class})
+    # def get_context_data(self, **kwargs):
+    #     context=super(MAddView,self).get_context_data(**kwargs)
+    #     context['form']=self.form_class
+    #     return context
 
 class EmailcheckaddView(MAddView):
     def form_valid(self, form):
@@ -256,7 +267,7 @@ class HisListView(DetailView):
             with reversion.create_revision():
                 obj=self.get_object()
                 obj.save()
-                reversion.set_comment(histag.get('edit'))
+                reversion.set_comment(histag.get('form'))
             version = Version.objects.get_for_object(obj=self.get_object())
 
         context = []
@@ -266,7 +277,7 @@ class HisListView(DetailView):
             diffs = {}
             diff_context = ''
             '''获取更新值'''
-            if i.revision.comment == histag.get('edit'):
+            if i.revision.comment == histag.get('form'):
                 '''获取更新子段'''
                 diff = [k for k in i.field_dict if i.field_dict[k] != versions[index + 1].field_dict[k]]
                 if diff:

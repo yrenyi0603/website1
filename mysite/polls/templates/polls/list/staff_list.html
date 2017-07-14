@@ -27,3 +27,13 @@
 {% block extendtool %}
 <a href="{% url 'excel_staff' %}" class="easyui-linkbutton" iconCls="icon-save" plain="true">Save</a>
 {% endblock%}
+{% block searchscript %}
+    function doSearch(){
+        $('#dg').datagrid('load',{
+            name:$('#{{ form.name.id_for_label }}').val(),
+            ipaddress:$('#{{ form.ipaddress.id_for_label }}').val(),
+            department:$('#{{ form.department.id_for_label }}').val(),
+            csrfmiddlewaretoken:'{{ csrf_token }}',
+        });
+    };
+{% endblock %}
