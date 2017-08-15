@@ -71,7 +71,7 @@ def sendEmailList(self):
     for i in emails:
         try:
             d=(n-i.lastcgdate).days
-            if d >= 90-7 and d < 90:
+            if d >= 90-7 and d <= 90:
                 sendemail2.delay(subject='提醒:您的邮箱密码即将过期',message=template.render({'email':i.email,'day':90-int(d)}))
                 logger.info('email:{0}'.format(i.email))
                 result.append(i.email)
